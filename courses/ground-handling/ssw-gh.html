@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Materi SSW Ground Handling - Nihongo no Tabi</title>
+  
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
+  <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32x32.png">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            },
+            zen: {
+              green: '#22C55E',
+              greenHover: '#16A34A'
+            }
+          },
+          fontFamily: {
+            serif: ['Noto Serif JP', 'serif'],
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@600;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <style>
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: #080c14; 
+      color: #f1f5f9; 
+      font-family: 'Inter', sans-serif; 
+    }
+    .zen-title { font-family: 'Noto Serif JP', serif; }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    
+    /* Perbaikan Teks Kanji & Ruby Agar Tidak Meluap (Overflow) */
+    .jp-text { 
+      line-height: 2.3 !important; 
+      font-family: 'Noto Sans JP', 'Inter', sans-serif; 
+      font-size: 1.05rem;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    ruby { 
+      ruby-position: over; 
+      ruby-align: center; 
+      display: inline-line-clamp;
+      margin: 0 0.05em; 
+    }
+    rt { 
+      font-family: 'Noto Sans JP', sans-serif; 
+      font-size: 0.6em; 
+      color: #38bdf8; 
+      padding-bottom: 0.1em; 
+      user-select: none; 
+      font-weight: 700; 
+    }
+
+    /* Styling Penanganan Gambar Agar Bisa Di-slide Horizontal */
+    .image-slide-container {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 1rem;
+    }
+    .image-slide-container img {
+      max-width: none;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="selection:bg-brand-500 selection:text-white flex flex-col justify-between antialiased min-h-screen">
+
+  <!-- Background Glow Effects -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-600/10 via-transparent to-transparent pointer-events-none blur-3xl -z-10"></div>
+
+  <div id="root">
+    <div class="min-h-screen flex flex-col items-center justify-center space-y-4">
+      <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Memuat Aplikasi SSW Ground Handling...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuBo-WsCX3pgfDEgukOQn2u_5W9XhwjMc",
+      authDomain: "sswghtabi.firebaseapp.com",
+      projectId: "sswghtabi",
+      storageBucket: "sswghtabi.firebasestorage.app",
+      messagingSenderId: "508947337100",
+      appId: "1:508947337100:web:94ed0da40fdf25f37950a9",
+      measurementId: "G-76MVDTGRHF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.db = db;
+    window.auth = auth;
+    window.googleProvider = googleProvider;
+    window.firestoreUtils = { collection, getDocs, query, orderBy };
+    window.authUtils = { signInWithPopup, signOut, onAuthStateChanged };
+
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+
+  <script>
+    const e = React.createElement;
+    const { useState, useEffect, useRef } = React;
+
+    function CSSLogo() {
+      return e('a', { href: '/', className: 'flex items-center gap-2.5 group transition-transform hover:scale-105', title: 'Kembali ke Dashboard Utama' },
+        e('div', { className: 'w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-900/40 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:border-brand-400 group-hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all shrink-0' },
+          e('svg', { className: 'w-5 h-5 sm:w-6 sm:h-6 fill-current', viewBox: '0 0 24 24' },
+            e('path', { d: 'M12 2L2 7h3v13h2V12h10v8h2V7h3L12 2zm-1 8H8V7h3v3zm5 0h-3V7h3v3z' }),
+            e('path', { d: 'M2.5 19h19v2h-19z', className: 'opacity-50' })
+          )
+        ),
+        e('div', { className: 'flex flex-col text-left' },
+          e('div', { className: 'flex items-center gap-1.5' },
+            e('span', { className: 'text-sm sm:text-base font-black tracking-tight text-white font-serif' }, '日本語の旅'),
+            e('span', { className: 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-widest' }, 'TABI')
+          ),
+          e('span', { className: 'text-[9px] font-semibold text-slate-400 tracking-wider uppercase' }, 'Nihongo no Tabi')
+        )
+      );
+    }
+
+    function CustomPageDropdown({ pages, selectedIdx, onSelect }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const dropdownRef = useRef(null);
+      const currentPage = pages[selectedIdx];
+
+      useEffect(() => {
+        function handleClickOutside(event) {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setIsOpen(false);
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+      }, []);
+
+      return e('div', { className: 'relative w-36 xs:w-44 sm:w-60 z-[30]', ref: dropdownRef },
+        e('button', {
+          type: 'button',
+          onClick: () => setIsOpen(!isOpen),
+          className: 'w-full bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-700/80 transition-all flex items-center justify-between shadow-sm'
+        },
+          e('div', { className: 'flex items-center space-x-1.5 min-w-0 pr-1' },
+            e('i', { className: 'fa-solid fa-book-open text-brand-400 text-[10px] shrink-0' }),
+            e('span', { className: 'truncate text-[10px] sm:text-xs' }, currentPage ? 'Hal ' + currentPage.pageNumber + ': ' + currentPage.title : 'Halaman...')
+          ),
+          e('i', { className: 'fa-solid fa-chevron-down text-slate-400 text-[8px] shrink-0 ml-1' })
+        ),
+        isOpen ? e('div', { className: 'absolute right-0 w-48 sm:w-full mt-2 z-[40] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto p-1 space-y-1' },
+          pages.map((p, idx) => {
+            const isSelected = selectedIdx === idx;
+            return e('button', {
+              key: idx,
+              onClick: () => { onSelect(idx); setIsOpen(false); },
+              className: 'w-full px-2.5 py-2 text-left text-xs transition-all rounded-xl flex items-center justify-between ' + (isSelected ? 'bg-brand-500 text-white font-bold' : 'text-slate-300 hover:bg-slate-800')
+            },
+              e('div', { className: 'flex items-center space-x-2 min-w-0 pr-1' },
+                e('span', { className: 'w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ' + (isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400') }, p.pageNumber),
+                e('span', { className: 'truncate text-[10px] sm:text-xs' }, p.title)
+              ),
+              isSelected ? e('i', { className: 'fa-solid fa-check text-white text-[9px] shrink-0' }) : null
+            );
+          })
+        ) : null
+      );
+    }
+
+    function App() {
+      const [user, setUser] = useState(null);
+      const [isAuthenticating, setIsAuthenticating] = useState(false);
+      const [pages, setPages] = useState([]);
+      const [isLoadingData, setIsLoadingData] = useState(true);
+      
+      const savedPageIdx = parseInt(localStorage.getItem('ssw_last_page_idx') || '0', 10);
+      const [currentPageIdx, setCurrentPageIdx] = useState(isNaN(savedPageIdx) ? 0 : savedPageIdx);
+      
+      const activePage = pages[currentPageIdx] || null;
+      const [openedTranslations, setOpenedTranslations] = useState({});
+      const [isPlayingFullPage, setIsPlayingFullPage] = useState(false);
+
+      /* MODE FOKUS MEMBACA & READ-ALONG */
+      const [isGuidedModeOpen, setIsGuidedModeOpen] = useState(false);
+      const [isFocusReadNoAudio, setIsFocusReadNoAudio] = useState(false);
+      const [guidedIdx, setGuidedIdx] = useState(0);
+      const [guidedStep, setGuidedStep] = useState('jp'); 
+      const [isGuidedPaused, setIsGuidedPaused] = useState(false);
+      const guidedTimeoutRef = useRef(null);
+
+      useEffect(() => {
+        if (isGuidedModeOpen || isFocusReadNoAudio) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+      }, [isGuidedModeOpen, isFocusReadNoAudio]);
+
+      const changePageIdx = (newIdx) => {
+        setCurrentPageIdx(newIdx);
+        localStorage.setItem('ssw_last_page_idx', newIdx.toString());
+        setGuidedIdx(0);
+      };
+
+      const loadFirestoreData = async () => {
+        if (!window.firestoreUtils || !window.db) return;
+        try {
+          const utils = window.firestoreUtils;
+          const q = utils.query(utils.collection(window.db, "ssw_pages"), utils.orderBy("pageNumber", "asc"));
+          const querySnapshot = await utils.getDocs(q);
+          const loadedPages = [];
+          querySnapshot.forEach(doc => loadedPages.push(doc.data()));
+
+          if (loadedPages.length > 0) {
+            setPages(loadedPages);
+            const validIdx = Math.min(currentPageIdx, loadedPages.length - 1);
+            if (validIdx !== currentPageIdx) changePageIdx(validIdx);
+          }
+        } catch (error) {
+          console.error("Error loading data:", error);
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+
+      useEffect(() => {
+        const init = () => {
+          if (window.authUtils && window.auth) {
+            window.authUtils.onAuthStateChanged(window.auth, currentUser => setUser(currentUser));
+            loadFirestoreData();
+          }
+        };
+        if (window.db) init();
+        else window.addEventListener('firebase-ready', init);
+        return () => window.removeEventListener('firebase-ready', init);
+      }, []);
+
+      useEffect(() => {
+        stopAudio();
+      }, [currentPageIdx]);
+
+      const cleanJapaneseText = (htmlString) => {
+        if (!htmlString) return "";
+        const temp = document.createElement("div");
+        temp.innerHTML = htmlString;
+        const rts = temp.getElementsByTagName("rt");
+        while (rts.length > 0) { rts[0].parentNode.removeChild(rts[0]); }
+        return (temp.textContent || temp.innerText || "").replace(/^[①②③➃⑤⑥⑦⑧⑨⑩A-Z]\.?\s*/i, "").replace(/^\d+\.?\s*/, "").replace(/^\([0-9]+\)\s*/, "");
+      };
+
+      const stopAudio = () => {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (guidedTimeoutRef.current) clearTimeout(guidedTimeoutRef.current);
+        setIsPlayingFullPage(false);
+      };
+
+      const getNativeVoice = (langCode) => {
+        if (!('speechSynthesis' in window)) return null;
+        try {
+          const voices = window.speechSynthesis.getVoices() || [];
+          return voices.find(v => v.lang && v.lang.toLowerCase().includes(langCode.toLowerCase())) || null;
+        } catch(err) { return null; }
+      };
+
+      const openGuidedMode = () => {
+        stopAudio();
+        setGuidedIdx(0);
+        setGuidedStep('jp');
+        setIsGuidedPaused(false);
+        setIsGuidedModeOpen(true);
+      };
+
+      const closeGuidedMode = () => {
+        stopAudio();
+        setIsGuidedModeOpen(false);
+      };
+
+      const openFocusReadNoAudio = () => {
+        stopAudio();
+        setGuidedIdx(0);
+        setIsFocusReadNoAudio(true);
+      };
+
+      const playGuidedStep = (itemIndex, step) => {
+        stopAudio();
+        if (!activePage || !activePage.content || !activePage.content[itemIndex]) return;
+
+        const item = activePage.content[itemIndex];
+        setGuidedIdx(itemIndex);
+        setGuidedStep(step);
+
+        if (!('speechSynthesis' in window)) return;
+
+        if (step === 'jp') {
+          const jpUtterance = new SpeechSynthesisUtterance(cleanJapaneseText(item.jp));
+          jpUtterance.lang = "ja-JP";
+          jpUtterance.rate = 0.85;
+          const jaVoice = getNativeVoice('ja');
+          if (jaVoice) jpUtterance.voice = jaVoice;
+
+          jpUtterance.onend = () => {
+            guidedTimeoutRef.current = setTimeout(() => playGuidedStep(itemIndex, 'id'), 400);
+          };
+          jpUtterance.onerror = () => setIsGuidedPaused(true);
+          window.speechSynthesis.speak(jpUtterance);
+        } else if (step === 'id') {
+          const idCleanDiv = document.createElement("div");
+          idCleanDiv.innerHTML = item.id || "";
+          const idUtterance = new SpeechSynthesisUtterance(idCleanDiv.textContent || idCleanDiv.innerText || "");
+          idUtterance.lang = "id-ID";
+          idUtterance.rate = 0.95;
+          const idVoice = getNativeVoice('id');
+          if (idVoice) idUtterance.voice = idVoice;
+
+          idUtterance.onend = () => {
+            guidedTimeoutRef.current = setTimeout(() => {
+              if (itemIndex + 1 < activePage.content.length) playGuidedStep(itemIndex + 1, 'jp');
+              else setIsGuidedPaused(true);
+            }, 600);
+          };
+          idUtterance.onerror = () => setIsGuidedPaused(true);
+          window.speechSynthesis.speak(idUtterance);
+        }
+      };
+
+      useEffect(() => {
+        if (isGuidedModeOpen && !isGuidedPaused) playGuidedStep(guidedIdx, guidedStep);
+      }, [isGuidedModeOpen]);
+
+      const toggleGuidedPause = () => {
+        if (isGuidedPaused) {
+          setIsGuidedPaused(false);
+          playGuidedStep(guidedIdx, guidedStep);
+        } else {
+          stopAudio();
+          setIsGuidedPaused(true);
+        }
+      };
+
+      const playSentenceAudio = (jpText, idText, evt) => {
+        if (evt) evt.stopPropagation();
+        stopAudio();
+        if (!('speechSynthesis' in window)) return;
+
+        const jpUtterance = new SpeechSynthesisUtterance(cleanJapaneseText(jpText));
+        jpUtterance.lang = "ja-JP";
+        jpUtterance.rate = 0.85;
+        const jaVoice = getNativeVoice('ja');
+        if (jaVoice) jpUtterance.voice = jaVoice;
+
+        const idCleanDiv = document.createElement("div");
+        idCleanDiv.innerHTML = idText || "";
+        const idUtterance = new SpeechSynthesisUtterance(idCleanDiv.textContent || idCleanDiv.innerText || "");
+        idUtterance.lang = "id-ID";
+        idUtterance.rate = 0.95;
+        const idVoice = getNativeVoice('id');
+        if (idVoice) idUtterance.voice = idVoice;
+
+        window.speechSynthesis.speak(jpUtterance);
+        window.speechSynthesis.speak(idUtterance);
+      };
+
+      const playFullPageAudio = () => {
+        stopAudio();
+        if (!('speechSynthesis' in window) || !activePage || !activePage.content) return;
+        setIsPlayingFullPage(true);
+
+        const contentArray = activePage.content;
+        let index = 0;
+
+        const playNext = () => {
+          if (index >= contentArray.length) {
+            setIsPlayingFullPage(false);
+            return;
+          }
+
+          const item = contentArray[index];
+          const jpUtterance = new SpeechSynthesisUtterance(cleanJapaneseText(item.jp));
+          jpUtterance.lang = "ja-JP";
+          jpUtterance.rate = 0.85;
+          const jaVoice = getNativeVoice('ja');
+          if (jaVoice) jpUtterance.voice = jaVoice;
+
+          const idCleanDiv = document.createElement("div");
+          idCleanDiv.innerHTML = item.id || "";
+          const idUtterance = new SpeechSynthesisUtterance(idCleanDiv.textContent || idCleanDiv.innerText || "");
+          idUtterance.lang = "id-ID";
+          idUtterance.rate = 0.95;
+          const idVoice = getNativeVoice('id');
+          if (idVoice) idUtterance.voice = idVoice;
+
+          idUtterance.onend = () => { index++; playNext(); };
+          jpUtterance.onerror = () => setIsPlayingFullPage(false);
+          idUtterance.onerror = () => setIsPlayingFullPage(false);
+
+          window.speechSynthesis.speak(jpUtterance);
+          window.speechSynthesis.speak(idUtterance);
+        };
+        playNext();
+      };
+
+      const handleGoogleLogin = async () => {
+        setIsAuthenticating(true);
+        try { await window.authUtils.signInWithPopup(window.auth, window.googleProvider); } 
+        catch (error) { console.error(error); } 
+        finally { setIsAuthenticating(false); }
+      };
+
+      const handleLogout = async () => {
+        stopAudio();
+        await window.authUtils.signOut(window.auth);
+      };
+
+      /* Fungsi Render Teks / Gambar yang Fleksibel */
+      const renderItemContent = (contentHtml) => {
+        if (!contentHtml) return null;
+        
+        // Deteksi Gambar
+        if (contentHtml.includes('<img')) {
+          return e('div', { className: 'image-slide-container custom-scrollbar my-2 p-1 bg-slate-950/60 border border-slate-800' },
+            e('div', { className: 'min-w-max text-center' },
+              e('div', { dangerouslySetInnerHTML: { __html: contentHtml } }),
+              e('p', { className: 'text-[10px] text-brand-400 mt-1 italic' }, '↔ Geser horizontal jika gambar terpotong')
+            )
+          );
+        }
+
+        return e('div', { 
+          className: 'jp-text text-base sm:text-lg text-slate-100 flex-1 tracking-wide font-medium break-words',
+          dangerouslySetInnerHTML: { __html: contentHtml } 
+        });
+      };
+
+      return e('div', { className: 'max-w-4xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-4 flex-1' },
+        
+        /* HEADER UTAMA */
+        !isGuidedModeOpen && !isFocusReadNoAudio ? e('header', { className: 'glass-panel p-3 sm:p-4 rounded-3xl flex items-center justify-between gap-2 relative z-10 shadow-lg' },
+          e('div', { className: 'flex items-center space-x-3 shrink-0' },
+            e(CSSLogo),
+            e('div', { className: 'border-l border-slate-800 pl-3 hidden xs:block' },
+              e('span', { className: 'text-[9px] font-bold text-brand-400 uppercase tracking-wider block' }, 'SSW Ground Handling'),
+              e('h1', { className: 'text-xs sm:text-sm font-extrabold text-white zen-title' }, 'Portal Materi')
+            )
+          ),
+          
+          e('div', { className: 'flex items-center space-x-2 sm:space-x-3 shrink-0' },
+            pages.length > 0 ? e(CustomPageDropdown, { pages: pages, selectedIdx: currentPageIdx, onSelect: (idx) => changePageIdx(idx) }) : null,
+            user ? e('div', { className: 'flex items-center space-x-2' },
+              user.photoURL ? e('img', { src: user.photoURL, alt: 'User', className: 'w-7 h-7 sm:w-8 sm:h-8 rounded-xl border border-brand-500/50 object-cover shrink-0' }) : null,
+              e('button', { onClick: handleLogout, className: 'p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-semibold flex items-center gap-1 shrink-0 hover:bg-rose-500/20 transition-all' },
+                e('i', { className: 'fa-solid fa-right-from-bracket text-xs' }), e('span', { className: 'hidden sm:inline' }, 'Keluar')
+              )
+            ) : e('button', { onClick: handleGoogleLogin, disabled: isAuthenticating, className: 'px-3.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95' },
+              e('i', { className: 'fa-brands fa-google text-xs' }),
+              e('span', null, isAuthenticating ? 'Proses...' : 'Masuk')
+            )
+          )
+        ) : null,
+
+        e('main', { className: 'space-y-4 relative z-0' },
+          
+          !isGuidedModeOpen && !isFocusReadNoAudio ? e(React.Fragment, null,
+            e('div', { className: 'flex items-center justify-between gap-2' },
+              e('div', { className: 'glass-panel p-1 rounded-2xl inline-flex gap-1 shadow-sm' },
+                e('span', { className: 'py-1.5 px-3.5 rounded-xl text-xs font-bold bg-brand-500 text-white shadow-sm' }, '📖 MATERI BELAJAR')
+              ),
+              e('a', { href: './quiz.html', className: 'px-3.5 py-1.5 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-400 text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95' },
+                e('i', { className: 'fa-solid fa-circle-question text-xs' }),
+                e('span', null, 'Menu Kuis (Ujian)')
+              )
+            ),
+
+            isLoadingData ? e('div', { className: 'glass-panel p-12 rounded-3xl text-center space-y-3 max-w-md mx-auto my-8 shadow-lg' },
+              e('div', { className: 'w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto' }),
+              e('p', { className: 'text-xs text-slate-400 font-medium tracking-wide' }, 'Memuat materi Ground Handling...')
+            ) : activePage ? e('div', { className: 'glass-panel rounded-3xl overflow-hidden shadow-xl space-y-4' },
+              
+              e('div', { className: 'px-4 py-3.5 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-900/40 flex-wrap' },
+                e('div', null,
+                  e('span', { className: 'text-[9px] font-bold text-brand-400 bg-brand-500/10 border border-brand-500/20 px-2 py-0.5 rounded-md' }, 'HALAMAN ' + activePage.pageNumber),
+                  e('h2', { className: 'text-sm sm:text-base font-bold text-white zen-title tracking-tight mt-1' }, activePage.title)
+                ),
+                e('div', { className: 'flex items-center gap-1.5 flex-wrap' },
+                  e('button', { onClick: openFocusReadNoAudio, className: 'px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95' },
+                    e('i', { className: 'fa-solid fa-book-reader text-xs' }), e('span', { className: 'hidden xs:inline' }, 'Fokus Membaca')
+                  ),
+                  e('button', { onClick: openGuidedMode, className: 'px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95' },
+                    e('i', { className: 'fa-solid fa-clapperboard text-xs' }), e('span', { className: 'hidden xs:inline' }, 'Bimbingan Suara')
+                  ),
+                  isPlayingFullPage ? e('button', { onClick: stopAudio, className: 'px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold flex items-center gap-1.5 animate-pulse' },
+                    e('i', { className: 'fa-solid fa-square text-[9px]' }), e('span', null, 'Stop')
+                  ) : e('button', { onClick: playFullPageAudio, className: 'px-3 py-1.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 hover:bg-brand-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all' },
+                    e('i', { className: 'fa-solid fa-volume-high text-xs' }), e('span', { className: 'hidden sm:inline' }, 'Putar Audio')
+                  )
+                )
+              ),
+
+              e('div', { className: 'px-4 py-3 space-y-3' },
+                activePage.content && activePage.content.map((item, idx) => {
+                  const isOpen = openedTranslations[idx];
+                  return e('div', { key: idx, className: 'space-y-2' },
+                    e('div', {
+                      onClick: () => setOpenedTranslations(prev => ({ ...prev, [idx]: !prev[idx] })),
+                      className: 'p-4 rounded-2xl border cursor-pointer flex items-start justify-between gap-3.5 transition-all ' + (isOpen ? 'bg-slate-900/90 border-brand-500 shadow-sm' : 'bg-slate-900/50 border-slate-800 hover:border-slate-700')
+                    },
+                      renderItemContent(item.jp),
+                      e('button', { onClick: (evt) => playSentenceAudio(item.jp, item.id, evt), className: 'p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-brand-400 transition-all shrink-0 mt-1' },
+                        e('i', { className: 'fa-solid fa-volume-low text-xs' })
+                      )
+                    ),
+                    isOpen ? e('div', { className: 'p-4 bg-slate-950/80 rounded-2xl border border-brand-500/30 text-xs sm:text-sm text-slate-300 leading-relaxed tracking-wide space-y-1 break-words' },
+                      e('i', { className: 'fa-solid fa-language text-brand-400 mr-2' }),
+                      e('span', { dangerouslySetInnerHTML: { __html: item.id } })
+                    ) : null
+                  );
+                })
+              ),
+
+              e('div', { className: 'p-3 border-t border-slate-800 flex items-center justify-between gap-2 bg-slate-900/40' },
+                e('button', { onClick: () => changePageIdx(Math.max(0, currentPageIdx - 1)), disabled: currentPageIdx === 0, className: 'px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 disabled:opacity-30 transition-all shadow-sm' }, '← Prev'),
+                e('span', { className: 'text-[11px] font-semibold text-slate-400 tabular-nums' }, (currentPageIdx + 1) + ' / ' + pages.length),
+                e('button', { onClick: () => changePageIdx(Math.min(pages.length - 1, currentPageIdx + 1)), disabled: currentPageIdx === pages.length - 1, className: 'px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-bold disabled:opacity-30 transition-all shadow-sm' }, 'Next →')
+              )
+            ) : null
+          ) : null,
+
+          /* MODAL FOKUS MEMBACA TANPA SUARA (DENGAN KONTROL NAVIGASI KANTIN / NAVIGASI HALAMAN DUA LEVEL) */
+          isFocusReadNoAudio && activePage && activePage.content ? e('div', { className: 'fixed inset-0 top-0 left-0 w-screen h-screen z-[999999] bg-[#080c14] flex flex-col justify-between p-4 sm:p-6 overflow-hidden' },
+            
+            /* Header Modal Fokus */
+            e('div', { className: 'flex items-center justify-between border-b border-slate-800 pb-3 shrink-0 gap-2' },
+              e('div', { className: 'flex items-center space-x-2 min-w-0' },
+                e('span', { className: 'w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0' }),
+                e('span', { className: 'text-xs font-bold text-amber-300 uppercase tracking-wider truncate' }, 'Hal ' + activePage.pageNumber + ' (' + (guidedIdx + 1) + '/' + activePage.content.length + ')')
+              ),
+              e('button', { onClick: () => setIsFocusReadNoAudio(false), className: 'px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 shrink-0' }, 'Tutup')
+            ),
+
+            /* Area Konten Utama */
+            e('div', { className: 'flex-1 overflow-y-auto custom-scrollbar my-4 px-2 py-4 flex flex-col justify-center space-y-6' },
+              e('div', { className: 'max-w-3xl w-full mx-auto text-center space-y-6' },
+                renderItemContent(activePage.content[guidedIdx].jp),
+                e('div', { className: 'p-4 bg-slate-900/80 rounded-2xl border border-slate-800 max-w-2xl mx-auto text-left sm:text-center' },
+                  e('p', { className: 'text-xs sm:text-sm font-semibold text-slate-300 leading-relaxed break-words whitespace-normal', dangerouslySetInnerHTML: { __html: '🇮🇩 ' + activePage.content[guidedIdx].id } })
+                )
+              )
+            ),
+
+            /* Footer Control Navigasi Mode Fokus Membaca */
+            e('div', { className: 'max-w-xl w-full mx-auto border-t border-slate-800 pt-3 space-y-3 shrink-0' },
+              
+              /* Navigasi Kalimat */
+              e('div', { className: 'flex items-center justify-between gap-3' },
+                e('button', {
+                  onClick: () => {
+                    if (guidedIdx > 0) {
+                      setGuidedIdx(guidedIdx - 1);
+                    } else if (currentPageIdx > 0) {
+                      changePageIdx(currentPageIdx - 1);
+                    }
+                  },
+                  disabled: guidedIdx === 0 && currentPageIdx === 0,
+                  className: 'flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs disabled:opacity-30 transition-all'
+                }, '← Kalimat / Hal Prev'),
+                
+                e('button', {
+                  onClick: () => {
+                    if (guidedIdx < activePage.content.length - 1) {
+                      setGuidedIdx(guidedIdx + 1);
+                    } else if (currentPageIdx < pages.length - 1) {
+                      changePageIdx(currentPageIdx + 1);
+                    }
+                  },
+                  disabled: guidedIdx === activePage.content.length - 1 && currentPageIdx === pages.length - 1,
+                  className: 'flex-1 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs disabled:opacity-30 transition-all'
+                }, 'Kalimat / Hal Next →')
+              ),
+
+              /* Navigasi Halaman Cepat */
+              e('div', { className: 'flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/80 pt-2' },
+                e('button', {
+                  onClick: () => { if (currentPageIdx > 0) changePageIdx(currentPageIdx - 1); },
+                  disabled: currentPageIdx === 0,
+                  className: 'hover:text-amber-300 disabled:opacity-30'
+                }, '« Halaman Sebelumnya'),
+                
+                e('span', { className: 'font-mono text-slate-300' }, 'Halaman ' + (currentPageIdx + 1) + ' dari ' + pages.length),
+                
+                e('button', {
+                  onClick: () => { if (currentPageIdx < pages.length - 1) changePageIdx(currentPageIdx + 1); },
+                  disabled: currentPageIdx === pages.length - 1,
+                  className: 'hover:text-amber-300 disabled:opacity-30'
+                }, 'Halaman Berikutnya »')
+              )
+            )
+          ) : null,
+
+          /* MODAL BIMBINGAN READ-ALONG SUARA */
+          isGuidedModeOpen && activePage && activePage.content ? e('div', { className: 'fixed inset-0 top-0 left-0 w-screen h-screen z-[999999] bg-[#080c14] flex flex-col justify-between p-4 sm:p-6 overflow-hidden' },
+            e('div', { className: 'flex items-center justify-between border-b border-slate-800 pb-3 shrink-0' },
+              e('div', { className: 'flex items-center space-x-2' },
+                e('span', { className: 'w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse' }),
+                e('span', { className: 'text-xs font-bold text-brand-400 uppercase tracking-wider' }, 'Mode Bimbingan Read-Along'),
+                e('span', { className: 'text-xs text-slate-400' }, '(' + (guidedIdx + 1) + '/' + activePage.content.length + ')')
+              ),
+              e('button', { onClick: closeGuidedMode, className: 'px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-center gap-1.5 transition-all' },
+                e('i', { className: 'fa-solid fa-stop text-[10px]' }),
+                e('span', null, 'Hentikan & Keluar')
+              )
+            ),
+
+            e('div', { className: 'flex-1 overflow-y-auto custom-scrollbar my-4 px-2 py-4 flex flex-col justify-center space-y-6' },
+              e('div', { className: 'max-w-3xl w-full mx-auto text-center space-y-6' },
+                renderItemContent(activePage.content[guidedIdx].jp),
+                e('div', {
+                  className: 'text-sm sm:text-lg leading-relaxed transition-all duration-500 min-h-[3rem] flex items-center justify-center break-words whitespace-normal ' + (guidedStep === 'id' ? 'glow-id font-bold opacity-100 scale-100' : 'text-slate-600 opacity-0 scale-95'),
+                  dangerouslySetInnerHTML: { __html: activePage.content[guidedIdx].id }
+                })
+              )
+            ),
+
+            e('div', { className: 'max-w-md w-full mx-auto border-t border-slate-800 pt-3 flex items-center justify-between gap-4 shrink-0' },
+              e('button', {
+                onClick: () => { if (guidedIdx > 0) playGuidedStep(guidedIdx - 1, 'jp'); },
+                disabled: guidedIdx === 0,
+                className: 'p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-30 transition-all'
+              },
+                e('i', { className: 'fa-solid fa-backward-step' })
+              ),
+
+              e('div', { className: 'flex items-center gap-3' },
+                e('button', {
+                  onClick: () => playGuidedStep(guidedIdx, 'jp'),
+                  className: 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 flex items-center gap-1.5 transition-all'
+                },
+                  e('i', { className: 'fa-solid fa-rotate-right text-brand-400' }), 'Ulangi'
+                ),
+                e('button', {
+                  onClick: toggleGuidedPause,
+                  className: 'p-4 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg transition-all active:scale-95'
+                },
+                  e('i', { className: 'fa-solid ' + (isGuidedPaused ? 'fa-play' : 'fa-pause') + ' text-base' })
+                )
+              ),
+
+              e('button', {
+                onClick: () => { if (guidedIdx + 1 < activePage.content.length) playGuidedStep(guidedIdx + 1, 'jp'); },
+                disabled: guidedIdx + 1 >= activePage.content.length,
+                className: 'p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-30 transition-all'
+              },
+                e('i', { className: 'fa-solid fa-forward-step' })
+              )
+            )
+          ) : null
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(e(App));
+  </script>
+
+  <footer class="py-6 text-center text-xs text-slate-600 border-t border-slate-900/80 mt-8">
+    <p>© 2026 Sho • SSW Ground Handling Portal</p>
+  </footer>
+
+</body>
+</html>

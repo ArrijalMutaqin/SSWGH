@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本語 AI 会話 & 翻訳練習 - AI Kaiwa & Translation Practice</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '"Plus Jakarta Sans"', '"Noto Sans JP"', 'sans-serif'],
+                        serif: ['"Noto Serif JP"', 'serif'],
+                        japanese: ['"Noto Sans JP"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Serif+JP:wght@600;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Inter', 'Noto Sans JP', sans-serif; 
+            background-color: #080c14; 
+            color: #f1f5f9;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(30, 41, 59, 0.8);
+        }
+        .japanese-text { 
+            font-family: 'Noto Sans JP', sans-serif; 
+            line-height: 2.2rem;
+            letter-spacing: 0.03em;
+        }
+        ruby { 
+            ruby-position: over; 
+            ruby-align: center; 
+        }
+        rt { 
+            font-size: 0.6em; 
+            color: #38bdf8;
+            user-select: none;
+            padding-bottom: 0.1rem;
+            font-weight: 700;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-100 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-600/10 via-transparent to-transparent pointer-events-none blur-3xl -z-10"></div>
+
+    <div id="root">
+        <div class="min-h-screen flex flex-col items-center justify-center space-y-4">
+            <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Memuat Portal Kaiwa...</p>
+        </div>
+    </div>
+
+    <script>
+        const e = React.createElement;
+        const { useState, useEffect, useRef } = React;
+
+        const CANDIDATE_MODELS = [
+            'gemini-3.6-flash',
+            'gemini-3.5-flash',
+            'gemini-3.5-flash-lite',
+            'gemini-3.1-flash-lite',
+            'gemini-3-flash',
+            'gemini-2.5-flash',
+            'gemini-2.5-flash-lite'
+        ];
+
+        const QUICK_ROLES = [
+            'Teman sekolah', 'Guru', 'Atasan', 'Rekan kerja', 'Pelanggan', 
+            'Pegawai toko', 'Kasir konbini', 'Pelayan restoran', 'Polisi', 
+            'Dokter', 'Perawat', 'Tetangga', 'Orang asing', 'Pewawancara kerja', 
+            'Penguji JLPT', 'Partner bahasa', 'Keluarga'
+        ];
+
+        const QUICK_LOCATIONS = [
+            'Rumah', 'Sekolah', 'Universitas', 'Kantor', 'Bandara', 'Restoran', 
+            'Konbini', 'Hotel', 'Rumah sakit', 'Kantor polisi', 'Stasiun', 
+            'Kereta', 'Bus', 'Taman', 'Supermarket', 'Mall', 'Tempat wisata'
+        ];
+
+        const QUICK_TIMES = [
+            'Pagi', 'Siang', 'Sore', 'Malam', 'Musim Semi', 'Musim Panas', 
+            'Musim Gugur', 'Musim Dingin', 'Tahun Baru', 'Festival', 
+            'Hari Kerja', 'Akhir Pekan'
+        ];
+
+        const JLPT_LEVELS = [
+            { level: 'JLPT N5', tag: 'Pemula', desc: 'Kalimat pendek, kosakata dasar' },
+            { level: 'JLPT N4', tag: 'Dasar', desc: 'Tata bahasa sehari-hari sederhana' },
+            { level: 'JLPT N3', tag: 'Menengah', desc: 'Kalimat majemuk & ekspresi alami' },
+            { level: 'JLPT N2', tag: 'Lanjutan', desc: 'Keigo halus & idiomatis' },
+            { level: 'JLPT N1', tag: 'Mahir', desc: 'Nuansa kompleks & wacana luas' },
+            { level: 'Native', tag: 'Alami', desc: 'Kecepatan & dialek native sejati' }
+        ];
+
+        const SPEECH_STYLES = ['Casual', 'Polite', 'Keigo', 'Campuran'];
+
+        const GOALS = [
+            'Percakapan bebas', 'Latihan wawancara', 'Memesan makanan', 
+            'Belanja', 'Bertanya arah', 'Bandara', 'Hotel', 'Rumah sakit', 'Presentasi', 
+            'Meeting', 'Small Talk', 'Dating', 'SSW', 'JLPT Speaking'
+        ];
+
+        const TRANSLATE_TOPICS = [
+            'Kehidupan Sehari-hari', 'Wisata & Jalan-jalan', 'Belanja & Konbini', 
+            'Restoran & Makanan', 'Dunia Kerja & Kantor', 'Sekolah & Pendidikan', 
+            'Hobi & Hiburan', 'Kesehatan & Rumah Sakit', 'Budaya & Bahasa'
+        ];
+
+        const RANDOM_PROMPT_TEMPLATES = [
+            'Anda sedang berbincang tentang rencana akhir pekan dan hobi favorit.',
+            'Lawan bicara meminta pendapat Anda mengenai pilihan karier atau tempat tinggal di Jepang.',
+            'Terjadi kendala kecil (misal: barang tertinggal atau terlambat) dan Anda perlu menjelaskannya.',
+            'Anda sedang memesan layanan dan meminta rekomendasi terbaik dari lawan bicara.',
+            'Diskusi santai mengenai pengalaman belajar bahasa Jepang dan perbedaan budaya.',
+            'Wawancara simulasi mengenai latar belakang dan alasan Anda datang ke Jepang.',
+            'Konsultasi kesehatan atau masalah sehari-hari untuk mencari solusi bersama.'
+        ];
+
+        const SCENARIO_PRESETS = [
+            {
+                title: 'Percakapan Santai di Kantor',
+                role: 'Rekan kerja',
+                location: 'Kantor',
+                time: 'Siang',
+                level: 'JLPT N3',
+                style: 'Polite',
+                goal: 'Percakapan bebas',
+                prompt: 'Diskusi tentang keberhasilan proyek terbaru dan rencana makan siang bersama.'
+            },
+            {
+                title: 'Kehilangan Bagasi di Haneda',
+                role: 'Ground Handling Haneda',
+                location: 'Bandara',
+                time: 'Siang',
+                level: 'JLPT N3',
+                style: 'Polite',
+                goal: 'Bandara',
+                prompt: 'Saya kehilangan koper di area pengambilan bagasi Bandara Haneda. Tolong bantu saya melapor dan mengisi formulir pelacakan.'
+            },
+            {
+                title: 'Beli Bento & Hangatkan di Konbini',
+                role: 'Kasir konbini',
+                location: 'Konbini',
+                time: 'Malam',
+                level: 'JLPT N5',
+                style: 'Polite',
+                goal: 'Belanja',
+                prompt: 'Saya ingin membeli bento, meminta dihangatkan (atatame), dan membeli kopi panas.'
+            },
+            {
+                title: 'Wawancara Kerja Tokutei Ginou (SSW)',
+                role: 'Pewawancara kerja',
+                location: 'Kantor',
+                time: 'Pagi',
+                level: 'JLPT N4',
+                style: 'Keigo',
+                goal: 'Latihan wawancara',
+                prompt: 'Saya sedang diwawancarai untuk pekerjaan bidang pengolahan makanan (food processing) di Jepang.'
+            }
+        ];
+
+        function CSSLogo() {
+            return e('a', { href: '/', className: 'flex items-center gap-2.5 group transition-transform hover:scale-105', title: 'Kembali ke Dashboard Utama' },
+                e('div', { className: 'w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-900/40 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:border-brand-400 transition-all shrink-0' },
+                    e('svg', { className: 'w-5 h-5 sm:w-6 sm:h-6 fill-current', viewBox: '0 0 24 24' },
+                        e('path', { d: 'M12 2L2 7h3v13h2V12h10v8h2V7h3L12 2zm-1 8H8V7h3v3zm5 0h-3V7h3v3z' }),
+                        e('path', { d: 'M2.5 19h19v2h-19z', className: 'opacity-50' })
+                    )
+                ),
+                e('div', { className: 'flex flex-col text-left' },
+                    e('div', { className: 'flex items-center gap-1.5' },
+                        e('span', { className: 'text-sm sm:text-base font-black tracking-tight text-white font-serif' }, '日本語の旅'),
+                        e('span', { className: 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-widest' }, 'TABI')
+                    ),
+                    e('span', { className: 'text-[9px] font-semibold text-slate-400 tracking-wider uppercase' }, 'Nihongo no Tabi')
+                )
+            );
+        }
+
+        function App() {
+            const [toast, setToast] = useState(null);
+            const showToast = (msg, type = 'info') => {
+                setToast({ message: msg, type });
+                setTimeout(() => setToast(null), 3500);
+            };
+
+            const [apiKey, setApiKey] = useState(() => localStorage.getItem('kaiwa_gemini_api_key') || '');
+            const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+            const [apiKeyModalTab, setApiKeyModalTab] = useState('input');
+
+            const [appMode, setAppMode] = useState('kaiwa');
+            const [activeTab, setActiveTab] = useState('setup');
+
+            const [sessionConfig, setSessionConfig] = useState({
+                role: 'Kasir konbini',
+                customRoleInput: '',
+                location: 'Konbini',
+                customLocationInput: '',
+                time: 'Malam',
+                customTimeInput: '',
+                level: 'JLPT N3',
+                style: 'Polite',
+                goal: 'Belanja',
+                customGoal: '',
+                length: 'Normal',
+                mode: 'text',
+                scenarioText: ''
+            });
+
+            const getEffectiveRole = (cfg) => cfg.role === 'Custom' ? (cfg.customRoleInput?.trim() || 'Lawan Bicara Custom') : cfg.role;
+            const getEffectiveLocation = (cfg) => cfg.location === 'Custom' ? (cfg.customLocationInput?.trim() || 'Tempat Custom') : cfg.location;
+            const getEffectiveTime = (cfg) => cfg.time === 'Custom' ? (cfg.customTimeInput?.trim() || 'Waktu Custom') : cfg.time;
+
+            const [translateConfig, setTranslateConfig] = useState({
+                direction: 'JA_ID',
+                level: 'JLPT N3',
+                topic: 'Kehidupan Sehari-hari',
+                questionCount: 5
+            });
+
+            const handleGenerateRandomScenario = () => {
+                const randRole = QUICK_ROLES[Math.floor(Math.random() * QUICK_ROLES.length)];
+                const randLoc = QUICK_LOCATIONS[Math.floor(Math.random() * QUICK_LOCATIONS.length)];
+                const randTime = QUICK_TIMES[Math.floor(Math.random() * QUICK_TIMES.length)];
+                const randLevelObj = JLPT_LEVELS[Math.floor(Math.random() * JLPT_LEVELS.length)];
+                const randStyle = SPEECH_STYLES[Math.floor(Math.random() * SPEECH_STYLES.length)];
+                const randGoal = GOALS[Math.floor(Math.random() * GOALS.length)];
+                const randTemplate = RANDOM_PROMPT_TEMPLATES[Math.floor(Math.random() * RANDOM_PROMPT_TEMPLATES.length)];
+
+                setSessionConfig(prev => ({
+                    ...prev,
+                    role: randRole,
+                    location: randLoc,
+                    time: randTime,
+                    level: randLevelObj.level,
+                    style: randStyle,
+                    goal: randGoal,
+                    scenarioText: `${randTemplate} (Simulasi acak: ${randRole} di ${randLoc})`
+                }));
+
+                showToast("Skenario acak berhasil dibuat! 🎲", "success");
+            };
+
+            return e('div', { className: 'min-h-screen flex flex-col justify-between relative font-sans' },
+                
+                toast ? e('div', { className: 'fixed top-5 right-5 z-50 animate-fade-in font-sans' },
+                    e('div', { className: 'px-4 py-3 rounded-2xl shadow-xl text-xs font-bold text-white flex items-center gap-2 border bg-slate-800 border-slate-700' },
+                        e('i', { className: 'fa-solid fa-circle-info' }),
+                        e('span', null, toast.message)
+                    )
+                ) : null,
+
+                e('header', { className: 'glass-panel text-white shadow-xl border-b border-slate-800/80 sticky top-0 z-40' },
+                    e('div', { className: 'max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2' },
+                        e('div', { className: 'flex items-center space-x-3 shrink-0' },
+                            e(CSSLogo),
+                            e('div', { className: 'border-l border-slate-800 pl-3 hidden sm:block' },
+                                e('span', { className: 'text-[9px] font-bold text-brand-400 uppercase tracking-wider block' }, 'AI Kaiwa & Translation'),
+                                e('h1', { className: 'text-xs sm:text-sm font-extrabold text-white' }, 'Portal Percakapan & Terjemahan')
+                            )
+                        ),
+                        e('div', { className: 'flex items-center gap-2' },
+                            e('button', {
+                                onClick: () => { setApiKeyModalTab('input'); setIsApiKeyModalOpen(true); },
+                                className: 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ' +
+                                    (!apiKey.trim() ? 'bg-amber-500 text-slate-950 border-amber-400 animate-pulse' : 'bg-slate-900/80 text-amber-300 border-slate-700/80')
+                            },
+                                e('i', { className: 'fa-solid fa-key' }),
+                                e('span', { className: 'hidden sm:inline' }, !apiKey.trim() ? 'Wajib Isi API Key' : 'API Key')
+                            )
+                        )
+                    )
+                ),
+
+                e('main', { className: 'max-w-4xl mx-auto px-3 sm:px-6 py-6 md:py-8 flex-1 w-full space-y-6' },
+                    
+                    e('div', { className: 'glass-panel rounded-3xl p-4 flex flex-col sm:flex-row gap-3 shadow-lg' },
+                        e('button', {
+                            onClick: () => setAppMode('kaiwa'),
+                            className: `flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-3 font-bold text-sm ${
+                                appMode === 'kaiwa'
+                                    ? 'bg-brand-500 text-white border-brand-400 shadow-md ring-2 ring-brand-500/30'
+                                    : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:bg-slate-800/60 hover:text-slate-200'
+                            }`
+                        },
+                            e('i', { className: 'fa-solid fa-comments text-lg' }),
+                            e('div', { className: 'text-left' },
+                                e('span', { className: 'block font-extrabold text-sm' }, '💬 Percakapan Kaiwa'),
+                                e('span', { className: 'text-[10px] font-normal block opacity-80' }, 'Roleplay Percakapan Interaktif')
+                            )
+                        ),
+                        e('button', {
+                            onClick: () => setAppMode('translate'),
+                            className: `flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-3 font-bold text-sm ${
+                                appMode === 'translate'
+                                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-md ring-2 ring-indigo-500/30'
+                                    : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:bg-slate-800/60 hover:text-slate-200'
+                            }`
+                        },
+                            e('i', { className: 'fa-solid fa-language text-lg' }),
+                            e('div', { className: 'text-left' },
+                                e('span', { className: 'block font-extrabold text-sm' }, '🈸 Mode Menerjemahkan'),
+                                e('span', { className: 'text-[10px] font-normal block opacity-80' }, 'Latihan Translasi & Kosakata')
+                            )
+                        )
+                    ),
+
+                    !apiKey.trim() ? e('div', { className: 'p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-300' },
+                        e('div', { className: 'flex items-center gap-2.5' },
+                            e('i', { className: 'fa-solid fa-key text-amber-400 text-base shrink-0' }),
+                            e('div', null,
+                                e('span', { className: 'font-bold block' }, 'API Key Belum Dikonfigurasi'),
+                                e('span', { className: 'text-amber-200/80 text-[11px]' }, 'Masukkan Gemini API Key Anda untuk mulai belajar.')
+                            )
+                        ),
+                        e('button', {
+                            onClick: () => { setApiKeyModalTab('input'); setIsApiKeyModalOpen(true); },
+                            className: 'px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition-all shrink-0'
+                        }, 'Set API Key Sekarang')
+                    ) : null,
+
+                    appMode === 'translate' ? e('div', { className: 'glass-panel rounded-3xl p-6 md:p-8 space-y-6 shadow-xl' },
+                        e('div', { className: 'border-b border-slate-800 pb-4' },
+                            e('span', { className: 'text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20' }, '🈸 Mode Latihan Menerjemahkan'),
+                            e('h2', { className: 'text-xl md:text-2xl font-black text-white mt-2' }, 'Latihan Translasi Bahasa Jepang ⇄ Indonesia'),
+                            e('p', { className: 'text-xs text-slate-400 mt-1 leading-relaxed' }, 'Sebelum mengerjakan soal, Anda akan diberi Vocab Preview. AI Gemini akan menilai akurasi terjemahan Anda!')
+                        ),
+                        e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-6' },
+                            e('div', { className: 'space-y-2' },
+                                e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '1. Arah Terjemahan'),
+                                e('div', { className: 'grid grid-cols-2 gap-2' },
+                                    e('button', {
+                                        onClick: () => setTranslateConfig({ ...translateConfig, direction: 'JA_ID' }),
+                                        className: `p-3 rounded-xl border text-xs font-bold ${translateConfig.direction === 'JA_ID' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900/60 text-slate-300 border-slate-800'}`
+                                    }, '🇯🇵 Jepang ➔ 🇮🇩 Indo'),
+                                    e('button', {
+                                        onClick: () => setTranslateConfig({ ...translateConfig, direction: 'ID_JA' }),
+                                        className: `p-3 rounded-xl border text-xs font-bold ${translateConfig.direction === 'ID_JA' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900/60 text-slate-300 border-slate-800'}`
+                                    }, '🇮🇩 Indo ➔ 🇯🇵 Jepang')
+                                )
+                            ),
+                            e('div', { className: 'space-y-2' },
+                                e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '2. Level JLPT'),
+                                e('select', {
+                                    value: translateConfig.level,
+                                    onChange: (ev) => setTranslateConfig({ ...translateConfig, level: ev.target.value }),
+                                    className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                }, JLPT_LEVELS.map(l => e('option', { key: l.level, value: l.level, className: 'bg-slate-900' }, l.level + ' — ' + l.tag)))
+                            ),
+                            e('div', { className: 'space-y-2' },
+                                e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '3. Topik / Tema'),
+                                e('select', {
+                                    value: translateConfig.topic,
+                                    onChange: (ev) => setTranslateConfig({ ...translateConfig, topic: ev.target.value }),
+                                    className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                }, TRANSLATE_TOPICS.map(t => e('option', { key: t, value: t, className: 'bg-slate-900' }, t)))
+                            ),
+                            e('div', { className: 'space-y-2' },
+                                e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '4. Jumlah Soal'),
+                                e('select', {
+                                    value: translateConfig.questionCount,
+                                    onChange: (ev) => setTranslateConfig({ ...translateConfig, questionCount: parseInt(ev.target.value) }),
+                                    className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                },
+                                    e('option', { value: 3, className: 'bg-slate-900' }, '3 Soal'),
+                                    e('option', { value: 5, className: 'bg-slate-900' }, '5 Soal'),
+                                    e('option', { value: 10, className: 'bg-slate-900' }, '10 Soal')
+                                )
+                            )
+                        ),
+                        e('div', { className: 'pt-4 border-t border-slate-800 flex justify-end' },
+                            e('button', {
+                                onClick: () => {
+                                    if (!apiKey.trim()) { setIsApiKeyModalOpen(true); return; }
+                                    showToast("Sesi Menerjemahkan Siap!", "success");
+                                },
+                                className: 'px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm rounded-2xl shadow-md transition-all flex items-center gap-2'
+                            },
+                                e('i', { className: 'fa-solid fa-book-open' }),
+                                e('span', null, 'Mulai Latihan Kosakata & Translasi ➔')
+                            )
+                        )
+                    ) :
+
+                    e('div', { className: 'space-y-6' },
+                        e('div', { className: 'glass-panel rounded-3xl p-6 md:p-8 shadow-xl' },
+                            e('div', { className: 'flex items-center justify-between mb-4 flex-wrap gap-2' },
+                                e('h3', { className: 'text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2' },
+                                    e('i', { className: 'fa-solid fa-bolt text-amber-400' }),
+                                    'Skenario Percakapan Siap Pakai'
+                                ),
+                                e('button', {
+                                    onClick: handleGenerateRandomScenario,
+                                    className: 'px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5'
+                                },
+                                    e('i', { className: 'fa-solid fa-dice text-sm' }),
+                                    e('span', null, 'Acak Skenario 🎲')
+                                )
+                            ),
+                            e('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4' },
+                                SCENARIO_PRESETS.map((preset, idx) => e('div', {
+                                    key: idx,
+                                    onClick: () => setSessionConfig(prev => ({
+                                        ...prev,
+                                        role: preset.role,
+                                        location: preset.location,
+                                        time: preset.time,
+                                        level: preset.level,
+                                        style: preset.style,
+                                        goal: preset.goal,
+                                        scenarioText: preset.prompt
+                                    })),
+                                    className: 'cursor-pointer p-4 rounded-2xl border bg-slate-900/60 border-slate-800 hover:border-brand-500/50 transition-all flex flex-col justify-between'
+                                },
+                                    e('div', null,
+                                        e('div', { className: 'flex items-center justify-between text-[11px] font-bold text-brand-400 mb-1' },
+                                            e('span', null, preset.level),
+                                            e('span', { className: 'text-slate-400 font-normal' }, preset.location)
+                                        ),
+                                        e('h4', { className: 'font-bold text-sm text-white mb-1 line-clamp-1' }, preset.title),
+                                        e('p', { className: 'text-xs text-slate-400 line-clamp-2 leading-relaxed' }, preset.prompt)
+                                    ),
+                                    e('div', { className: 'mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400' },
+                                        e('span', null, preset.role),
+                                        e('i', { className: 'fa-solid fa-chevron-right text-[10px]' })
+                                    )
+                                ))
+                            )
+                        ),
+
+                        e('div', { className: 'glass-panel rounded-3xl p-6 md:p-8 space-y-6 shadow-xl' },
+                            e('h3', { className: 'text-lg font-bold text-white border-b border-slate-800 pb-3' }, 'Pengaturan Percakapan Kaiwa'),
+                            
+                            e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-6' },
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '1. Peran Lawan Bicara'),
+                                    e('select', {
+                                        value: sessionConfig.role,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, role: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    },
+                                        QUICK_ROLES.map(r => e('option', { key: r, value: r, className: 'bg-slate-900' }, r)),
+                                        e('option', { value: 'Custom', className: 'bg-slate-900' }, '✏️ Custom (Ketik Sendiri)...')
+                                    ),
+                                    sessionConfig.role === 'Custom' ? e('input', {
+                                        type: 'text',
+                                        value: sessionConfig.customRoleInput || '',
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, customRoleInput: ev.target.value }),
+                                        placeholder: 'Ketik peran (misal: Chef Ramen, Alien...)',
+                                        className: 'w-full bg-slate-900 border border-brand-500/50 rounded-xl p-3 text-xs text-white mt-2'
+                                    }) : null
+                                ),
+
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '2. Level Kesulitan'),
+                                    e('select', {
+                                        value: sessionConfig.level,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, level: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    }, JLPT_LEVELS.map(l => e('option', { key: l.level, value: l.level, className: 'bg-slate-900' }, l.level + ' — ' + l.tag)))
+                                ),
+
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '3. Tempat (Location)'),
+                                    e('select', {
+                                        value: sessionConfig.location,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, location: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    },
+                                        QUICK_LOCATIONS.map(l => e('option', { key: l, value: l, className: 'bg-slate-900' }, l)),
+                                        e('option', { value: 'Custom', className: 'bg-slate-900' }, '✏️ Custom (Ketik Sendiri)...')
+                                    ),
+                                    sessionConfig.location === 'Custom' ? e('input', {
+                                        type: 'text',
+                                        value: sessionConfig.customLocationInput || '',
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, customLocationInput: ev.target.value }),
+                                        placeholder: 'Ketik lokasi (misal: Onsen rahasia...)',
+                                        className: 'w-full bg-slate-900 border border-brand-500/50 rounded-xl p-3 text-xs text-white mt-2'
+                                    }) : null
+                                ),
+
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '4. Waktu / Situasi'),
+                                    e('select', {
+                                        value: sessionConfig.time,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, time: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    },
+                                        QUICK_TIMES.map(t => e('option', { key: t, value: t, className: 'bg-slate-900' }, t)),
+                                        e('option', { value: 'Custom', className: 'bg-slate-900' }, '✏️ Custom (Ketik Sendiri)...')
+                                    ),
+                                    sessionConfig.time === 'Custom' ? e('input', {
+                                        type: 'text',
+                                        value: sessionConfig.customTimeInput || '',
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, customTimeInput: ev.target.value }),
+                                        placeholder: 'Ketik waktu/situasi (misal: Jam sibuk...)',
+                                        className: 'w-full bg-slate-900 border border-brand-500/50 rounded-xl p-3 text-xs text-white mt-2'
+                                    }) : null
+                                ),
+
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '5. Gaya Bahasa (Speech Style)'),
+                                    e('select', {
+                                        value: sessionConfig.style,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, style: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    }, SPEECH_STYLES.map(s => e('option', { key: s, value: s, className: 'bg-slate-900' }, s)))
+                                ),
+
+                                e('div', { className: 'space-y-2' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, '6. Tujuan Percakapan (Goal)'),
+                                    e('select', {
+                                        value: sessionConfig.goal,
+                                        onChange: (ev) => setSessionConfig({ ...sessionConfig, goal: ev.target.value }),
+                                        className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200'
+                                    }, GOALS.map(g => e('option', { key: g, value: g, className: 'bg-slate-900' }, g)))
+                                )
+                            ),
+
+                            e('div', { className: 'space-y-2 pt-2 border-t border-slate-800' },
+                                e('label', { className: 'text-xs font-bold text-slate-300 uppercase block' }, 'Instruksi Tambahan (Opsional)'),
+                                e('textarea', {
+                                    rows: 2,
+                                    placeholder: 'Contoh: Buat lawan bicara bertanya alasan saya terlambat ke tempat kerja...',
+                                    value: sessionConfig.scenarioText,
+                                    onChange: (ev) => setSessionConfig({ ...sessionConfig, scenarioText: ev.target.value }),
+                                    className: 'w-full bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 resize-none'
+                                })
+                            ),
+
+                            e('div', { className: 'pt-4 border-t border-slate-800 flex justify-end' },
+                                e('button', {
+                                    onClick: () => {
+                                        if (!apiKey.trim()) { setIsApiKeyModalOpen(true); return; }
+                                        showToast("Sesi Percakapan Siap Dimulai!", "success");
+                                    },
+                                    className: 'px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-sm rounded-2xl shadow-md transition-all flex items-center gap-2'
+                                },
+                                    e('i', { className: 'fa-solid fa-comments' }),
+                                    e('span', null, 'Mulai Percakapan Kaiwa')
+                                )
+                            )
+                        )
+                    )
+                ),
+
+                isApiKeyModalOpen ? e('div', { className: 'fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in' },
+                    e('div', { className: 'glass-panel rounded-3xl border border-slate-800 shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]' },
+                        
+                        e('div', { className: 'p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/90 text-white' },
+                            e('div', { className: 'flex items-center gap-2.5' },
+                                e('div', { className: 'w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center' },
+                                    e('i', { className: 'fa-solid fa-key text-sm' })
+                                ),
+                                e('div', null,
+                                    e('h3', { className: 'font-bold text-sm text-white' }, 'Pengaturan API Key Gemini'),
+                                    e('p', { className: 'text-[10px] text-slate-400' }, 'Google AI Studio Authentication')
+                                )
+                            ),
+                            e('button', { onClick: () => setIsApiKeyModalOpen(false), className: 'text-slate-400 hover:text-white p-1' },
+                                e('i', { className: 'fa-solid fa-xmark text-lg' })
+                            )
+                        ),
+
+                        e('div', { className: 'flex border-b border-slate-800 bg-slate-900/50 px-4 pt-3 gap-2' },
+                            e('button', {
+                                onClick: () => setApiKeyModalTab('input'),
+                                className: `px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-t border-x ${
+                                    apiKeyModalTab === 'input'
+                                        ? 'bg-[#080c14] text-brand-400 border-slate-800 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300 border-transparent'
+                                }`
+                            }, e('i', { className: 'fa-solid fa-sliders mr-1.5' }), ' Simpan Key'),
+                            e('button', {
+                                onClick: () => setApiKeyModalTab('tutorial'),
+                                className: `px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-t border-x ${
+                                    apiKeyModalTab === 'tutorial'
+                                        ? 'bg-[#080c14] text-brand-400 border-slate-800 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300 border-transparent'
+                                }`
+                            }, e('i', { className: 'fa-solid fa-graduation-cap mr-1.5' }), ' Panduan Rinci')
+                        ),
+
+                        e('div', { className: 'p-6 space-y-4 overflow-y-auto custom-scrollbar' },
+                            apiKeyModalTab === 'input' ? e('div', { className: 'space-y-4' },
+                                e('div', { className: 'p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs space-y-1.5 text-amber-300' },
+                                    e('div', { className: 'font-bold flex items-center gap-1.5' },
+                                        e('i', { className: 'fa-solid fa-shield-halved text-amber-400' }),
+                                        'Autentikasi API Key'
+                                    ),
+                                    e('p', { className: 'text-[11px] text-amber-200/80 leading-relaxed' }, 'Masukkan API Key resmi Anda dari Google AI Studio. Kunci akan diverifikasi sebelum disimpan secara lokal di perangkat Anda.')
+                                ),
+                                e('div', { className: 'space-y-1.5' },
+                                    e('label', { className: 'text-xs font-bold text-slate-300 block' }, 'Gemini API Key Anda:'),
+                                    e('input', {
+                                        type: 'password',
+                                        defaultValue: apiKey,
+                                        id: 'apiKeyInput',
+                                        placeholder: 'Masukkan API Key Anda...',
+                                        className: 'w-full text-xs p-3.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white focus:outline-none focus:border-brand-500 font-mono'
+                                    })
+                                ),
+                                e('div', { className: 'pt-2 flex justify-end gap-2 border-t border-slate-800' },
+                                    e('button', { onClick: () => setIsApiKeyModalOpen(false), className: 'px-4 py-2 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl' }, 'Batal'),
+                                    e('button', {
+                                        onClick: () => {
+                                            const val = document.getElementById('apiKeyInput').value.trim();
+                                            setApiKey(val);
+                                            localStorage.setItem('kaiwa_gemini_api_key', val);
+                                            showToast("API Key berhasil disimpan!", "success");
+                                            setIsApiKeyModalOpen(false);
+                                        },
+                                        className: 'px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md'
+                                    }, 'Verifikasi & Simpan')
+                                )
+                            ) : e('div', { className: 'space-y-4 text-xs text-slate-300' },
+                                e('div', { className: 'p-4 bg-brand-500/10 border border-brand-500/20 rounded-2xl flex items-start gap-3' },
+                                    e('div', { className: 'w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0 font-bold' }, '🔑'),
+                                    e('div', null,
+                                        e('h4', { className: 'font-extrabold text-brand-300 text-sm' }, 'Cara Memperoleh Gemini API Key Gratis'),
+                                        e('p', { className: 'text-[11px] text-slate-400 mt-0.5' }, 'Google menyediakan akses kuota gratis yang dapat digunakan untuk berlatih percakapan bahasa Jepang setiap hari.')
+                                    )
+                                ),
+                                e('div', { className: 'space-y-3' },
+                                    e('div', { className: 'flex gap-3' },
+                                        e('div', { className: 'w-6 h-6 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center shrink-0 text-xs' }, '1'),
+                                        e('div', null,
+                                            e('span', { className: 'font-bold text-slate-200 block' }, 'Kunjungi Portal Resmi Google AI Studio'),
+                                            e('a', {
+                                                href: 'https://aistudio.google.com/app/apikey',
+                                                target: '_blank',
+                                                className: 'inline-flex items-center gap-1 px-3 py-1 bg-brand-500 text-white text-[11px] font-bold rounded-xl mt-1'
+                                            }, 'Buka Google AI Studio ', e('i', { className: 'fa-solid fa-arrow-up-right-from-square text-[10px]' }))
+                                        )
+                                    ),
+                                    e('div', { className: 'flex gap-3' },
+                                        e('div', { className: 'w-6 h-6 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center shrink-0 text-xs' }, '2'),
+                                        e('div', null, e('span', { className: 'font-bold text-slate-200 block' }, 'Login menggunakan Akun Google / Gmail Anda.'))
+                                    ),
+                                    e('div', { className: 'flex gap-3' },
+                                        e('div', { className: 'w-6 h-6 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center shrink-0 text-xs' }, '3'),
+                                        e('div', null, e('span', { className: 'font-bold text-slate-200 block' }, 'Klik tombol "Create API Key" pada dashboard.'))
+                                    ),
+                                    e('div', { className: 'flex gap-3' },
+                                        e('div', { className: 'w-6 h-6 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center shrink-0 text-xs' }, '4'),
+                                        e('div', null, e('span', { className: 'font-bold text-slate-200 block' }, 'Salin string kode kunci API yang dibuat, lalu tempelkan pada tab "Simpan Key".'))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ) : null,
+
+                e('footer', { className: 'py-6 text-center text-xs text-slate-600 border-t border-slate-900/80 mt-8' },
+                    e('p', null, '© 2026 Sho • Japanese AI Kaiwa & Translation Practice')
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(e(App));
+    </script>
+</body>
+</html>

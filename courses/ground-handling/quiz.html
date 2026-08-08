@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kuis Evaluasi SSW Ground Handling - Nihongo no Tabi</title>
+  
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
+  <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32x32.png">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            },
+            zen: {
+              green: '#22C55E',
+              greenHover: '#16A34A'
+            }
+          },
+          fontFamily: {
+            serif: ['Noto Serif JP', 'serif'],
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@600;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <style>
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: #080c14; 
+      color: #f1f5f9; 
+      font-family: 'Inter', sans-serif; 
+    }
+    .zen-title { font-family: 'Noto Serif JP', serif; }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    .jp-text { line-height: 2.2 !important; font-family: 'Noto Sans JP', 'Inter', sans-serif; }
+    ruby { ruby-position: over; ruby-align: center; word-break: keep-all; margin: 0 0.1em; }
+    rt { font-family: 'Noto Sans JP', sans-serif; font-size: 0.58em; color: #38bdf8; padding-bottom: 0.15em; user-select: none; font-weight: 500; }
+    .glow-jp { text-shadow: 0 0 15px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.3); color: #22C55E !important; }
+    .glow-id { text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); color: #38BDF8 !important; }
+  </style>
+</head>
+<body class="selection:bg-brand-500 selection:text-white flex flex-col justify-between antialiased min-h-screen">
+
+  <!-- Background Glow Effects -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-600/10 via-transparent to-transparent pointer-events-none blur-3xl -z-10"></div>
+
+  <div id="root">
+    <div class="min-h-screen flex flex-col items-center justify-center space-y-4">
+      <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Memuat Portal Kuis...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuBo-WsCX3pgfDEgukOQn2u_5W9XhwjMc",
+      authDomain: "sswghtabi.firebaseapp.com",
+      projectId: "sswghtabi",
+      storageBucket: "sswghtabi.firebasestorage.app",
+      messagingSenderId: "508947337100",
+      appId: "1:508947337100:web:94ed0da40fdf25f37950a9",
+      measurementId: "G-76MVDTGRHF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.db = db;
+    window.auth = auth;
+    window.googleProvider = googleProvider;
+    window.firestoreUtils = { collection, getDocs, query, orderBy };
+    window.authUtils = { signInWithPopup, signOut, onAuthStateChanged };
+
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+
+  <script>
+    const e = React.createElement;
+    const { useState, useEffect, useRef } = React;
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    /* KOMPONEN LOGO MURNI CSS / SVG INLINE (SAMA PERSIS DENGAN INDEX) */
+    function CSSLogo() {
+      return e('a', { href: '/', className: 'flex items-center gap-2.5 group transition-transform hover:scale-105', title: 'Kembali ke Dashboard Utama' },
+        e('div', { className: 'w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-900/40 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:border-brand-400 group-hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all shrink-0' },
+          e('svg', { className: 'w-5 h-5 sm:w-6 sm:h-6 fill-current', viewBox: '0 0 24 24' },
+            e('path', { d: 'M12 2L2 7h3v13h2V12h10v8h2V7h3L12 2zm-1 8H8V7h3v3zm5 0h-3V7h3v3z' }),
+            e('path', { d: 'M2.5 19h19v2h-19z', className: 'opacity-50' })
+          )
+        ),
+        e('div', { className: 'flex flex-col text-left' },
+          e('div', { className: 'flex items-center gap-1.5' },
+            e('span', { className: 'text-sm sm:text-base font-black tracking-tight text-white font-serif' }, '日本語の旅'),
+            e('span', { className: 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-widest' }, 'TABI')
+          ),
+          e('span', { className: 'text-[9px] font-semibold text-slate-400 tracking-wider uppercase' }, 'Nihongo no Tabi')
+        )
+      );
+    }
+
+    function App() {
+      const [user, setUser] = useState(null);
+      const [isAuthenticating, setIsAuthenticating] = useState(false);
+      const [allRawPages, setAllRawPages] = useState([]);
+      const [isLoadingData, setIsLoadingData] = useState(true);
+
+      const [selectedBatch, setSelectedBatch] = useState('1-5');
+      const [activeQuestions, setActiveQuestions] = useState([]);
+      const [userAnswers, setUserAnswers] = useState({});
+
+      /* MODE KUIS SUARA (LISTENING) */
+      const [isQuizGuidedOpen, setIsQuizGuidedOpen] = useState(false);
+      const [quizGuidedIdx, setQuizGuidedIdx] = useState(0);
+      const [quizGuidedPhase, setQuizGuidedPhase] = useState('intro');
+      const QUIZ_TIMER_LIMIT = 30;
+      const [quizTimer, setQuizTimer] = useState(QUIZ_TIMER_LIMIT);
+      
+      const quizTimerRef = useRef(null);
+      const guidedTimeoutRef = useRef(null);
+      const isQuizGuidedOpenRef = useRef(false);
+
+      const [quizSpokenExplanation, setQuizSpokenExplanation] = useState("");
+
+      useEffect(() => {
+        isQuizGuidedOpenRef.current = isQuizGuidedOpen;
+        if (isQuizGuidedOpen) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+      }, [isQuizGuidedOpen]);
+
+      const loadFirestoreData = async () => {
+        if (!window.firestoreUtils || !window.db) return;
+        try {
+          const utils = window.firestoreUtils;
+          const q = utils.query(utils.collection(window.db, "ssw_pages"), utils.orderBy("pageNumber", "asc"));
+          const querySnapshot = await utils.getDocs(q);
+          const loadedPages = [];
+          querySnapshot.forEach(doc => loadedPages.push(doc.data()));
+          setAllRawPages(loadedPages);
+        } catch (error) {
+          console.error("Error loading quiz data:", error);
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+
+      useEffect(() => {
+        const init = () => {
+          if (window.authUtils && window.auth) {
+            window.authUtils.onAuthStateChanged(window.auth, currentUser => setUser(currentUser));
+            loadFirestoreData();
+          }
+        };
+        if (window.db) init();
+        else window.addEventListener('firebase-ready', init);
+        return () => window.removeEventListener('firebase-ready', init);
+      }, []);
+
+      useEffect(() => {
+        if (allRawPages.length === 0) return;
+
+        let startPage = 1;
+        let endPage = 19;
+
+        if (selectedBatch === '1-5') { startPage = 1; endPage = 5; }
+        else if (selectedBatch === '6-10') { startPage = 6; endPage = 10; }
+        else if (selectedBatch === '11-15') { startPage = 11; endPage = 15; }
+        else if (selectedBatch === '16-19') { startPage = 16; endPage = 19; }
+
+        let accumulated = [];
+        allRawPages.forEach(p => {
+          if (p.pageNumber >= startPage && p.pageNumber <= endPage && Array.isArray(p.quizzes)) {
+            p.quizzes.forEach((q, idx) => {
+              accumulated.push({ ...q, originPage: p.pageNumber, originPageTitle: p.title, originalQuizIndex: idx });
+            });
+          }
+        });
+
+        setActiveQuestions(shuffleArray(accumulated));
+        setUserAnswers({});
+      }, [selectedBatch, allRawPages]);
+
+      const stopAudio = () => {
+        if (guidedTimeoutRef.current) {
+          clearTimeout(guidedTimeoutRef.current);
+          guidedTimeoutRef.current = null;
+        }
+        if (quizTimerRef.current) {
+          clearInterval(quizTimerRef.current);
+          quizTimerRef.current = null;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      };
+
+      const getNativeVoice = (langCode) => {
+        if (!('speechSynthesis' in window)) return null;
+        try {
+          const voices = window.speechSynthesis.getVoices() || [];
+          return voices.find(v => v.lang && v.lang.toLowerCase().includes(langCode.toLowerCase())) || null;
+        } catch(err) { return null; }
+      };
+
+      const cleanJapaneseText = (htmlString) => {
+        if (!htmlString) return "";
+        const temp = document.createElement("div");
+        temp.innerHTML = htmlString;
+        const rts = temp.getElementsByTagName("rt");
+        while (rts.length > 0) { rts[0].parentNode.removeChild(rts[0]); }
+        return (temp.textContent || temp.innerText || "").replace(/^[①②③➃⑤⑥⑦⑧⑨⑩A-Z]\.?\s*/i, "").replace(/^\d+\.?\s*/, "").replace(/^\([0-9]+\)\s*/, "");
+      };
+
+      const openQuizGuidedMode = () => {
+        stopAudio();
+        setQuizGuidedIdx(0);
+        setIsQuizGuidedOpen(true);
+        startQuizGuidedIntro(0); 
+      };
+
+      const closeQuizGuidedMode = () => {
+        setIsQuizGuidedOpen(false);
+        isQuizGuidedOpenRef.current = false;
+        stopAudio();
+      };
+
+      const startQuizGuidedIntro = (qIdx) => {
+        stopAudio();
+        setQuizGuidedIdx(qIdx);
+
+        if (qIdx > 0) {
+          startQuizGuidedStep(qIdx);
+          return;
+        }
+
+        setQuizGuidedPhase('intro');
+        if (!('speechSynthesis' in window)) {
+          startQuizGuidedStep(qIdx);
+          return;
+        }
+
+        const introText = "Bersiaplah. Soal akan dibacakan. Anda memiliki waktu 30 detik untuk menjawab sebelum pembahasan ditampilkan.";
+        const introUtterance = new SpeechSynthesisUtterance(introText);
+        introUtterance.lang = "id-ID";
+        introUtterance.rate = 0.95;
+        const idVoice = getNativeVoice('id');
+        if (idVoice) introUtterance.voice = idVoice;
+
+        introUtterance.onend = () => {
+          if (!isQuizGuidedOpenRef.current) return;
+          guidedTimeoutRef.current = setTimeout(() => {
+            if (isQuizGuidedOpenRef.current) {
+              startQuizGuidedStep(qIdx);
+            }
+          }, 800);
+        };
+        introUtterance.onerror = () => {
+          if (isQuizGuidedOpenRef.current) startQuizGuidedStep(qIdx);
+        };
+
+        window.speechSynthesis.speak(introUtterance);
+      };
+
+      const startQuizGuidedStep = (qIdx) => {
+        stopAudio();
+        if (!activeQuestions[qIdx] || !isQuizGuidedOpenRef.current) return;
+
+        setQuizGuidedIdx(qIdx);
+        setQuizGuidedPhase('reading');
+        setQuizTimer(QUIZ_TIMER_LIMIT); 
+
+        const quiz = activeQuestions[qIdx];
+        if (!('speechSynthesis' in window)) return;
+
+        const qUtterance = new SpeechSynthesisUtterance(cleanJapaneseText(quiz.question));
+        qUtterance.lang = "ja-JP";
+        qUtterance.rate = 0.85;
+        const jaVoice = getNativeVoice('ja');
+        if (jaVoice) qUtterance.voice = jaVoice;
+
+        qUtterance.onend = () => {
+          if (!isQuizGuidedOpenRef.current) return;
+          setQuizGuidedPhase('waiting');
+          if (quizTimerRef.current) clearInterval(quizTimerRef.current);
+          
+          let timeLeft = QUIZ_TIMER_LIMIT;
+          quizTimerRef.current = setInterval(() => {
+            if (!isQuizGuidedOpenRef.current) {
+              clearInterval(quizTimerRef.current);
+              return;
+            }
+            timeLeft--;
+            setQuizTimer(timeLeft);
+            if (timeLeft <= 0) {
+              clearInterval(quizTimerRef.current);
+              revealAndExplainQuiz(qIdx, null); 
+            }
+          }, 1000);
+        };
+
+        window.speechSynthesis.speak(qUtterance);
+      };
+
+      const handleQuizGuidedChoice = (qIdx, choice) => {
+        if (quizGuidedPhase === 'revealed' || quizGuidedPhase === 'intro' || quizGuidedPhase === 'reading') return;
+        if (quizTimerRef.current) clearInterval(quizTimerRef.current);
+        
+        const quiz = activeQuestions[qIdx];
+        let isCorrect = false;
+        if (typeof choice === 'boolean') {
+          isCorrect = quiz.isCorrect === choice;
+        } else if (quiz.options && quiz.options[choice] !== undefined) {
+          isCorrect = !!quiz.options[choice].isCorrect;
+        }
+
+        handleQuizAnswer(qIdx, choice); 
+        revealAndExplainQuiz(qIdx, { chosen: choice, isCorrect: isCorrect }); 
+      };
+
+      const revealAndExplainQuiz = (qIdx, userAnsState) => {
+        stopAudio();
+        if (!isQuizGuidedOpenRef.current) return;
+        setQuizGuidedPhase('revealed');
+        const quiz = activeQuestions[qIdx];
+        if (!quiz) return;
+
+        let correctText = "";
+        if (typeof quiz.isCorrect === 'boolean') {
+          correctText = quiz.isCorrect ? "Benar (Tadashii)" : "Salah (Ayamari)";
+        } else if (Array.isArray(quiz.options)) {
+          const correctOpt = quiz.options.find(o => o.isCorrect);
+          if (correctOpt) {
+            const temp = document.createElement("div");
+            temp.innerHTML = correctOpt.text || correctOpt.label || "";
+            correctText = temp.textContent || temp.innerText || "";
+          }
+        }
+
+        let prefixText = "";
+        if (userAnsState === null) {
+          prefixText = `Waktu habis. Jawaban yang benar adalah: ${correctText}. `;
+        } else if (userAnsState.isCorrect) {
+          prefixText = `Jawaban Anda Benar! `;
+        } else {
+          prefixText = `Jawaban Anda Salah. Jawaban yang benar adalah: ${correctText}. `;
+        }
+
+        const expCleanDiv = document.createElement("div");
+        expCleanDiv.innerHTML = quiz.explanation || "";
+        const cleanExplanation = expCleanDiv.textContent || expCleanDiv.innerText || "";
+
+        const fullSpokenText = prefixText + cleanExplanation;
+        setQuizSpokenExplanation(fullSpokenText);
+
+        if (!('speechSynthesis' in window)) return;
+
+        const expUtterance = new SpeechSynthesisUtterance(fullSpokenText);
+        expUtterance.lang = "id-ID";
+        expUtterance.rate = 0.95;
+        const idVoice = getNativeVoice('id');
+        if (idVoice) expUtterance.voice = idVoice;
+
+        expUtterance.onend = () => {
+          if (!isQuizGuidedOpenRef.current) return;
+          guidedTimeoutRef.current = setTimeout(() => {
+            if (isQuizGuidedOpenRef.current) {
+              if (qIdx + 1 < activeQuestions.length) {
+                startQuizGuidedIntro(qIdx + 1); 
+              } else {
+                closeQuizGuidedMode(); 
+              }
+            }
+          }, 2000);
+        };
+
+        window.speechSynthesis.speak(expUtterance);
+      };
+
+      const handleGoogleLogin = async () => {
+        setIsAuthenticating(true);
+        try { await window.authUtils.signInWithPopup(window.auth, window.googleProvider); } 
+        catch (error) { console.error(error); } 
+        finally { setIsAuthenticating(false); }
+      };
+
+      const handleLogout = async () => {
+        stopAudio();
+        await window.authUtils.signOut(window.auth);
+      };
+
+      const handleQuizAnswer = (qIdx, choice) => {
+        if (!user || !activeQuestions[qIdx]) return;
+        const quiz = activeQuestions[qIdx];
+        
+        let isCorrect = false;
+        if (typeof choice === 'boolean') {
+          isCorrect = quiz.isCorrect === choice;
+        } else if (quiz.options && quiz.options[choice] !== undefined) {
+          isCorrect = !!quiz.options[choice].isCorrect;
+        }
+
+        setUserAnswers(prev => ({ ...prev, [qIdx]: { chosen: choice, isCorrect: isCorrect } }));
+      };
+
+      const resetCurrentQuiz = () => {
+        setActiveQuestions(shuffleArray(activeQuestions));
+        setUserAnswers({});
+      };
+
+      return e('div', { className: 'max-w-4xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-4 flex-1' },
+        
+        /* HEADER UTAMA DENGAN GLASS PANEL DAN LOGO CSS */
+        !isQuizGuidedOpen ? e('header', { className: 'glass-panel p-3 sm:p-4 rounded-3xl flex items-center justify-between gap-2 relative z-10 shadow-lg' },
+          e('div', { className: 'flex items-center space-x-3 shrink-0' },
+            e(CSSLogo),
+            e('div', { className: 'border-l border-slate-800 pl-3 hidden xs:block' },
+              e('span', { className: 'text-[9px] font-bold text-brand-400 uppercase tracking-wider block' }, 'SSW Ground Handling'),
+              e('h1', { className: 'text-xs sm:text-sm font-extrabold text-white zen-title' }, 'Portal Kuis Evaluasi')
+            )
+          ),
+          
+          e('div', { className: 'flex items-center space-x-2 sm:space-x-3 shrink-0' },
+            user ? e('div', { className: 'flex items-center space-x-2' },
+              user.photoURL ? e('img', { src: user.photoURL, alt: 'User', className: 'w-7 h-7 sm:w-8 sm:h-8 rounded-xl border border-brand-500/50 object-cover shrink-0' }) : null,
+              e('button', { onClick: handleLogout, className: 'p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-semibold flex items-center gap-1 shrink-0 hover:bg-rose-500/20 transition-all' },
+                e('i', { className: 'fa-solid fa-right-from-bracket text-xs' }), e('span', { className: 'hidden sm:inline' }, 'Keluar')
+              )
+            ) : e('button', { onClick: handleGoogleLogin, disabled: isAuthenticating, className: 'px-3.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95' },
+              e('i', { className: 'fa-brands fa-google text-xs' }),
+              e('span', null, isAuthenticating ? 'Proses...' : 'Masuk')
+            )
+          )
+        ) : null,
+
+        e('main', { className: 'space-y-4 relative z-0' },
+          
+          !isQuizGuidedOpen ? e(React.Fragment, null,
+            e('div', { className: 'flex items-center justify-between gap-2' },
+              e('a', { href: './ssw-gh.html', className: 'px-3.5 py-1.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-2 transition-all shadow-sm' },
+                e('i', { className: 'fa-solid fa-arrow-left text-xs' }),
+                e('span', null, 'Kembali ke Materi')
+              ),
+              user && activeQuestions.length > 0 ? e('button', {
+                onClick: openQuizGuidedMode,
+                className: 'px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95'
+              },
+                e('i', { className: 'fa-solid fa-headphones text-xs' }),
+                e('span', null, 'Mode Kuis Suara')
+              ) : null
+            ),
+
+            e('div', { className: 'glass-panel p-4 rounded-3xl space-y-3' },
+              e('div', { className: 'flex items-center justify-between' },
+                e('h2', { className: 'text-xs sm:text-sm font-bold text-white zen-title flex items-center gap-2' },
+                  e('i', { className: 'fa-solid fa-layer-group text-brand-400' }), 'Pilih Paket Soal Evaluasi'
+                ),
+                e('span', { className: 'text-[10px] text-slate-400' }, activeQuestions.length + ' Soal Tersedia')
+              ),
+
+              e('div', { className: 'grid grid-cols-2 sm:grid-cols-5 gap-2' },
+                [
+                  { id: '1-5', label: 'Hal 1 – 5' },
+                  { id: '6-10', label: 'Hal 6 – 10' },
+                  { id: '11-15', label: 'Hal 11 – 15' },
+                  { id: '16-19', label: 'Hal 16 – 19' },
+                  { id: 'all', label: 'Semua (1-19)' }
+                ].map(b => e('button', {
+                  key: b.id,
+                  onClick: () => setSelectedBatch(b.id),
+                  className: 'py-2 px-2.5 rounded-xl text-xs font-bold transition-all border text-center ' +
+                    (selectedBatch === b.id 
+                      ? 'bg-brand-500 border-brand-500 text-white shadow-md' 
+                      : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700')
+                }, b.label))
+              )
+            ),
+
+            isLoadingData ? e('div', { className: 'glass-panel p-12 rounded-3xl text-center space-y-3 max-w-md mx-auto my-8 shadow-lg' },
+              e('div', { className: 'w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto' }),
+              e('p', { className: 'text-xs text-slate-400 font-medium tracking-wide' }, 'Menyiapkan kumpulan soal...')
+            ) : !user ? (
+              e('div', { className: 'glass-panel p-8 rounded-3xl text-center space-y-4 max-w-md mx-auto my-4' },
+                e('div', { className: 'w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mx-auto text-xl' },
+                  e('i', { className: 'fa-solid fa-lock' })
+                ),
+                e('div', { className: 'space-y-1' },
+                  e('h3', { className: 'text-base font-bold text-white zen-title' }, 'Akses Kuis Terkunci'),
+                  e('p', { className: 'text-xs text-slate-400 leading-relaxed' }, 'Silakan masuk dengan akun Google Anda untuk mengerjakan latihan kuis evaluasi dan melihat skor.')
+                ),
+                e('button', { onClick: handleGoogleLogin, disabled: isAuthenticating, className: 'px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-2 shadow-md active:scale-95' },
+                  e('i', { className: 'fa-brands fa-google text-xs' }),
+                  e('span', null, isAuthenticating ? 'Proses...' : 'Masuk dengan Google')
+                )
+              )
+            ) : activeQuestions.length === 0 ? (
+              e('div', { className: 'glass-panel p-8 rounded-3xl text-center space-y-2 text-slate-400 text-xs' },
+                'Tidak ada soal kuis yang ditemukan pada paket halaman ini.'
+              )
+            ) : (
+              e('div', { className: 'glass-panel p-4 rounded-3xl space-y-4 shadow-xl' },
+                
+                e('div', { className: 'flex items-center justify-between border-b border-slate-800 pb-3' },
+                  e('div', { className: 'flex items-center gap-2' },
+                    e('span', { className: 'text-xs font-bold text-white' }, 'Paket Kuis: ' + (selectedBatch === 'all' ? 'Semua Halaman' : 'Halaman ' + selectedBatch)),
+                    e('span', { className: 'text-[10px] bg-brand-500/10 text-brand-400 px-2 py-0.5 rounded-full font-semibold border border-brand-500/20' }, 'Acak')
+                  ),
+                  e('button', {
+                    onClick: resetCurrentQuiz,
+                    className: 'px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold flex items-center gap-1.5 transition-all shadow-sm'
+                  },
+                    e('i', { className: 'fa-solid fa-rotate-right text-[10px] text-brand-400' }),
+                    e('span', null, 'Acak Ulang Soal')
+                  )
+                ),
+
+                e('div', { className: 'space-y-4' },
+                  activeQuestions.map((quiz, qIdx) => {
+                    const state = userAnswers[qIdx] || null;
+                    const hasAnswered = !!state;
+                    const quizImg = quiz.image || quiz.imageUrl || null;
+                    const hasCustomOptions = Array.isArray(quiz.options) && quiz.options.length > 0;
+
+                    return e('div', { key: qIdx, className: 'p-4 rounded-2xl bg-slate-900/50 border border-slate-800 space-y-3 shadow-md' },
+                      
+                      e('div', { className: 'flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800/80 pb-2' },
+                        e('span', { className: 'font-bold text-brand-400' }, 'SOAL NOMOR ' + (qIdx + 1)),
+                        e('span', null, 'Sumber: Hal ' + quiz.originPage + ' (' + quiz.originPageTitle + ')')
+                      ),
+
+                      quizImg ? e('div', { className: 'rounded-xl overflow-hidden border border-slate-800 bg-slate-950 max-h-52 flex items-center justify-center p-2' },
+                        e('img', { src: quizImg, alt: 'Soal Kuis', className: 'max-h-48 object-contain rounded-lg' })
+                      ) : null,
+
+                      e('p', { className: 'jp-text text-xs sm:text-sm font-medium text-slate-100 leading-relaxed', dangerouslySetInnerHTML: { __html: quiz.question } }),
+                      
+                      e('div', { className: 'flex flex-col space-y-2' },
+                        hasCustomOptions ? (
+                          quiz.options.map((opt, optIdx) => {
+                            const isChosen = hasAnswered && state.chosen === optIdx;
+                            let btnStyle = 'bg-slate-800/80 border-slate-700/80 hover:border-brand-400/60 text-slate-200';
+                            
+                            if (hasAnswered) {
+                              if (isChosen) {
+                                btnStyle = state.isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-rose-500/20 border-rose-500 text-rose-300';
+                              } else if (opt.isCorrect) {
+                                btnStyle = 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400';
+                              }
+                            }
+
+                            return e('button', {
+                              key: optIdx,
+                              onClick: () => handleQuizAnswer(qIdx, optIdx),
+                              disabled: hasAnswered,
+                              className: 'w-full p-2.5 rounded-xl text-xs font-semibold border flex items-center justify-between transition-all ' + btnStyle
+                            },
+                              e('div', { className: 'flex items-center gap-2 min-w-0 pr-1' },
+                                e('span', { className: 'w-5 h-5 rounded-lg bg-slate-700/60 text-slate-200 flex items-center justify-center font-bold text-[10px] shrink-0' }, String.fromCharCode(65 + optIdx)),
+                                opt.image ? e('img', { src: opt.image, alt: 'Opsi', className: 'h-10 object-contain rounded' }) : null,
+                                e('span', { className: 'jp-text font-medium text-left leading-relaxed', dangerouslySetInnerHTML: { __html: opt.text || opt.label || '' } })
+                              )
+                            );
+                          })
+                        ) : (
+                          e(React.Fragment, null,
+                            e('button', {
+                              onClick: () => handleQuizAnswer(qIdx, true),
+                              disabled: hasAnswered,
+                              className: 'w-full p-2.5 rounded-xl text-xs font-semibold border flex items-center justify-between transition-all ' + 
+                                (hasAnswered && state.chosen === true 
+                                  ? (state.isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-rose-500/20 border-rose-500 text-rose-300') 
+                                  : 'bg-slate-800/80 border-slate-700/80 hover:border-brand-400/60 text-slate-200')
+                            },
+                              e('div', { className: 'flex items-center gap-2' },
+                                e('span', { className: 'w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs' }, '〇'),
+                                e('span', { className: 'font-bold' }, '正しい (Tadashii)')
+                              )
+                            ),
+                            e('button', {
+                              onClick: () => handleQuizAnswer(qIdx, false),
+                              disabled: hasAnswered,
+                              className: 'w-full p-2.5 rounded-xl text-xs font-semibold border flex items-center justify-between transition-all ' + 
+                                (hasAnswered && state.chosen === false 
+                                  ? (state.isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-rose-500/20 border-rose-500 text-rose-300') 
+                                  : 'bg-slate-800/80 border-slate-700/80 hover:border-brand-400/60 text-slate-200')
+                            },
+                              e('div', { className: 'flex items-center gap-2' },
+                                e('span', { className: 'w-5 h-5 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xs' }, '✕'),
+                                e('span', { className: 'font-bold' }, '誤り (Ayamari)')
+                              )
+                            )
+                          )
+                        )
+                      ),
+
+                      hasAnswered ? e('div', { className: 'p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2 mt-2' },
+                        e('span', { className: 'text-brand-400 font-bold block text-xs tracking-wide' }, '💡 Penjelasan:'),
+                        e('p', { className: 'jp-text leading-relaxed space-y-2', dangerouslySetInnerHTML: { __html: quiz.explanation } })
+                      ) : null
+                    );
+                  })
+                )
+              )
+            )
+          ) : null,
+
+          /* MODAL OVERLAY FULLSCREEN SEJATI */
+          isQuizGuidedOpen && activeQuestions[quizGuidedIdx] ? e('div', { className: 'fixed inset-0 top-0 left-0 w-screen h-screen z-[999999] bg-[#080c14] flex flex-col justify-between p-4 sm:p-8 overflow-hidden' },
+            
+            e('div', { className: 'flex items-center justify-between border-b border-slate-800 pb-4' },
+              e('div', { className: 'flex items-center space-x-3' },
+                e('span', { className: 'w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse' }),
+                e('span', { className: 'text-xs font-bold text-brand-400 uppercase tracking-wider' }, 'Mode Kuis Suara (Listening)'),
+                e('span', { className: 'text-xs text-slate-400' }, '(' + (quizGuidedIdx + 1) + '/' + activeQuestions.length + ')')
+              ),
+              e('button', { onClick: closeQuizGuidedMode, className: 'px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-center gap-1.5 transition-all' },
+                e('i', { className: 'fa-solid fa-stop text-[10px]' }),
+                e('span', null, 'Hentikan & Keluar')
+              )
+            ),
+
+            e('div', { className: 'max-w-2xl w-full mx-auto my-auto space-y-6 py-4' },
+              
+              e('div', { className: 'flex items-center justify-between bg-slate-900/80 p-3 rounded-2xl border border-slate-800 shadow-inner' },
+                e('div', { className: 'flex items-center gap-2.5 text-xs font-semibold' },
+                  quizGuidedPhase === 'intro' ? e('span', { className: 'text-rose-400 flex items-center gap-2' }, e('i', { className: 'fa-solid fa-microphone-lines animate-pulse' }), 'Dengarkan Instruksi...') :
+                  quizGuidedPhase === 'reading' ? e('span', { className: 'text-amber-400 flex items-center gap-2' }, e('i', { className: 'fa-solid fa-volume-high animate-bounce' }), 'Membacakan Soal...') :
+                  quizGuidedPhase === 'waiting' ? e('span', { className: 'text-sky-400 flex items-center gap-2' }, e('i', { className: 'fa-solid fa-stopwatch animate-pulse' }), 'Pilih Jawaban Sekarang!') :
+                  e('span', { className: 'text-brand-400 flex items-center gap-2' }, e('i', { className: 'fa-solid fa-circle-check' }), 'Pembahasan Jawaban')
+                ),
+                quizGuidedPhase === 'waiting' ? e('div', { className: 'px-4 py-1.5 rounded-xl bg-sky-500/10 border-2 border-sky-500 text-sky-300 text-sm font-extrabold flex items-center gap-2' },
+                  e('i', { className: 'fa-regular fa-clock' }),
+                  e('span', { className: 'tabular-nums' }, quizTimer + 's')
+                ) : null
+              ),
+
+              quizGuidedPhase === 'intro' ? e('div', { className: 'glass-panel p-8 rounded-3xl text-center space-y-4 border-rose-500/30 bg-rose-950/10' },
+                 e('i', { className: 'fa-solid fa-headphones text-4xl text-rose-400' }),
+                 e('h3', { className: 'text-xl font-bold text-white zen-title' }, 'Bersiaplah'),
+                 e('p', { className: 'text-sm text-slate-300 leading-relaxed' }, 'Soal Bahasa Jepang akan dibacakan. Anda memiliki waktu 30 detik untuk menjawab setiap soal sebelum pembahasan ditampilkan.')
+              ) : e(React.Fragment, null,
+
+                activeQuestions[quizGuidedIdx].image || activeQuestions[quizGuidedIdx].imageUrl ? e('div', { className: 'rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 max-h-48 flex items-center justify-center p-2' },
+                  e('img', { src: activeQuestions[quizGuidedIdx].image || activeQuestions[quizGuidedIdx].imageUrl, alt: 'Gambar Soal', className: 'max-h-40 object-contain rounded-lg' })
+                ) : null,
+
+                e('div', {
+                  className: 'jp-text text-base sm:text-xl font-bold tracking-wide text-center transition-all ' + (quizGuidedPhase === 'reading' ? 'glow-jp scale-105' : 'text-slate-100'),
+                  dangerouslySetInnerHTML: { __html: activeQuestions[quizGuidedIdx].question }
+                }),
+
+                (quizGuidedPhase === 'waiting' || quizGuidedPhase === 'revealed') ? e('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2' },
+                  Array.isArray(activeQuestions[quizGuidedIdx].options) && activeQuestions[quizGuidedIdx].options.length > 0 ? (
+                    activeQuestions[quizGuidedIdx].options.map((opt, optIdx) => {
+                      const quizState = userAnswers[quizGuidedIdx] || null;
+                      const hasAns = !!quizState;
+                      const isChosen = hasAns && quizState.chosen === optIdx;
+
+                      let btnStyle = 'bg-slate-800/80 border-slate-700 hover:border-brand-400/60 text-slate-200';
+                      if (quizGuidedPhase === 'revealed') {
+                        if (hasAns && isChosen) {
+                          btnStyle = quizState.isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 scale-105' : 'bg-rose-500/20 border-rose-500 text-rose-300 scale-95 opacity-70';
+                        } else if (opt.isCorrect) {
+                          btnStyle = 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400';
+                        } else if (hasAns && !isChosen) {
+                           btnStyle = 'bg-slate-900 border-slate-800 text-slate-500 opacity-50 scale-95';
+                        }
+                      }
+
+                      return e('button', {
+                        key: optIdx,
+                        onClick: () => handleQuizGuidedChoice(quizGuidedIdx, optIdx),
+                        disabled: quizGuidedPhase === 'revealed',
+                        className: 'p-4 rounded-2xl text-xs font-semibold border flex items-center justify-between transition-all duration-300 ' + btnStyle
+                      },
+                        e('div', { className: 'flex items-center gap-2.5 min-w-0 pr-1' },
+                          e('span', { className: 'w-6 h-6 rounded-lg bg-slate-700/60 text-slate-100 flex items-center justify-center font-bold text-[11px] shrink-0' }, String.fromCharCode(65 + optIdx)),
+                          e('span', { className: 'jp-text font-medium text-left leading-relaxed', dangerouslySetInnerHTML: { __html: opt.text || opt.label || '' } })
+                        ),
+                        (quizGuidedPhase === 'revealed' && opt.isCorrect) ? e('i', { className: 'fa-solid fa-check-circle text-emerald-400 ml-2' }) : null
+                      );
+                    })
+                  ) : (
+                    e(React.Fragment, null,
+                      e('button', {
+                        onClick: () => handleQuizGuidedChoice(quizGuidedIdx, true),
+                        disabled: quizGuidedPhase === 'revealed',
+                        className: 'p-4 rounded-2xl text-xs font-semibold border flex items-center justify-between transition-all bg-slate-800/80 border-slate-700 hover:border-brand-400/60 text-slate-200' + (quizGuidedPhase === 'revealed' ? ' opacity-50' : '')
+                      },
+                        e('div', { className: 'flex items-center gap-2.5' },
+                          e('span', { className: 'w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm' }, '〇'),
+                          e('span', { className: 'font-bold' }, '正しい (Tadashii)')
+                        )
+                      ),
+                      e('button', {
+                        onClick: () => handleQuizGuidedChoice(quizGuidedIdx, false),
+                        disabled: quizGuidedPhase === 'revealed',
+                        className: 'p-4 rounded-2xl text-xs font-semibold border flex items-center justify-between transition-all bg-slate-800/80 border-slate-700 hover:border-brand-400/60 text-slate-200' + (quizGuidedPhase === 'revealed' ? ' opacity-50' : '')
+                      },
+                        e('div', { className: 'flex items-center gap-2.5' },
+                          e('span', { className: 'w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-sm' }, '✕'),
+                          e('span', { className: 'font-bold' }, '誤り (Ayamari)')
+                        )
+                      )
+                    )
+                  )
+                ) : null,
+
+                quizGuidedPhase === 'revealed' ? e('div', { className: 'p-4 bg-slate-950/80 rounded-2xl border border-brand-500/40 text-xs text-slate-300 space-y-2 mt-2 shadow-lg' },
+                  e('span', { className: 'text-brand-400 font-bold block text-xs tracking-wide' }, '💡 Pembahasan (Suara Indonesia):'),
+                  e('p', { className: 'jp-text leading-relaxed glow-id font-medium', dangerouslySetInnerHTML: { __html: quizSpokenExplanation } })
+                ) : null
+              )
+            ),
+
+            e('div', { className: 'max-w-md w-full mx-auto border-t border-slate-800 pt-4 flex items-center justify-between gap-4' },
+              e('button', {
+                onClick: () => { if (quizGuidedIdx > 0) startQuizGuidedIntro(quizGuidedIdx - 1); },
+                disabled: quizGuidedIdx === 0,
+                className: 'p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-30 transition-all'
+              },
+                e('i', { className: 'fa-solid fa-backward-step' })
+              ),
+
+              e('button', {
+                onClick: () => startQuizGuidedStep(quizGuidedIdx),
+                className: 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 flex items-center gap-1.5 transition-all'
+              },
+                e('i', { className: 'fa-solid fa-rotate-right text-brand-400' }), 'Ulangi Soal Ini'
+              ),
+
+              e('button', {
+                onClick: () => { if (quizGuidedIdx + 1 < activeQuestions.length) startQuizGuidedIntro(quizGuidedIdx + 1); },
+                disabled: quizGuidedIdx + 1 >= activeQuestions.length,
+                className: 'p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-30 transition-all'
+              },
+                e('i', { className: 'fa-solid fa-forward-step' })
+              )
+            )
+          ) : null
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(e(App));
+  </script>
+
+  <footer class="py-6 text-center text-xs text-slate-600 border-t border-slate-900/80 mt-8">
+    <p>© 2026 Sho • SSW Ground Handling Portal</p>
+  </footer>
+
+</body>
+</html>

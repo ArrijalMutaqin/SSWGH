@@ -1,1365 +1,269 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SSW Ground Handling Learning Apps</title>
-  <!-- Tailwind CSS -->
+  <title>Sho - Portal Belajar Interaktif</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts for Japan and Modern Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;750&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- React and Babel -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Firebase SDK (Modular CDN) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    // Konfigurasi Firebase resmi Anda
-    const firebaseConfig = {
-      apiKey: "AIzaSyDuBo-WsCX3pgfDEgukOQn2u_5W9XhwjMc",
-      authDomain: "sswghtabi.firebaseapp.com",
-      projectId: "sswghtabi",
-      storageBucket: "sswghtabi.firebasestorage.app",
-      messagingSenderId: "508947337100",
-      appId: "1:508947337100:web:94ed0da40fdf25f37950a9",
-      measurementId: "G-76MVDTGRHF"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app);
-    window.firestoreUtils = { collection, getDocs, query, orderBy };
-  </script>
-  
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
-      padding-top: 80px; /* Space for the fixed header */
-    }
-    .font-fredoka {
-      font-family: 'Fredoka', sans-serif;
-    }
-    /* Ruby Alignment and Styling */
-    ruby {
-      ruby-position: over;
-      ruby-align: center;
-      word-break: keep-all;
-    }
-    rt {
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 0.58em;
-      color: #2563eb; /* Biru Lebih Pekat untuk Furigana */
-      padding-bottom: 0.12em;
-      letter-spacing: 0.05em;
-      user-select: none;
-    }
-    .dark rt {
-      color: #60a5fa; /* Biru terang kontras tinggi di mode gelap */
-    }
-    /* Prevent text cut-off on mobile */
-    .ruby-container {
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
-    }
-    .dark ::-webkit-scrollbar-thumb {
-      background: #475569;
-    }
-    .animate-fadeIn {
-      animation: fadeIn 0.2s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 3D Flashcard flip styles */
-    .perspective-1000 {
-      perspective: 1000px;
-    }
-    .transform-style-3d {
-      transform-style: preserve-3d;
-    }
-    .backface-hidden {
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-    }
-    .rotate-y-180 {
-      transform: rotateY(180deg);
-    }
-  </style>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          screens: {
-            'xs': '400px',
-          },
           colors: {
             brand: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              500: '#22c55e', // Hijau Duolingo
-              600: '#16a34a',
-              700: '#15803d',
-              950: '#052e16',
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
             },
-            bunpro: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              500: '#8b5cf6', // Ungu Bunpro
-              600: '#7c3aed',
+            zani: {
+              accent: '#f43f5e',
+              glow: '#e11d48'
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Noto Serif JP', 'serif'],
           }
         }
       }
     }
   </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #080c14;
+      color: #f1f5f9;
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 16px 30px -10px rgba(14, 165, 233, 0.15);
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .avatar-glow {
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.3);
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 antialiased">
-  <div id="root"></div>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
 
-  <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+  <!-- Background Glow Effects -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-600/10 via-transparent to-transparent pointer-events-none blur-3xl -z-10"></div>
 
-    // Daftar Akun Terdaftar
-    const REGISTERED_USERS = [
-      { id: "peserta_ssw", email: "peserta@ssw.com", password: "password123", name: "Peserta SSW Hub" },
-      { id: "sukses_gh", email: "groundhandling@ssw.com", password: "belajarsampailolos", name: "Sukses GH Jepang" }
-    ];
-
-    // SVG Icon Component
-    function Icon({ name, className = "w-5 h-5" }) {
-      const paths = {
-        "book-open": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-          </g>
-        ),
-        "sun": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-          </g>
-        ),
-        "moon": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-          </g>
-        ),
-        "rotate-ccw": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-            <path d="M3 3v5h5"/>
-          </g>
-        ),
-        "play": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="6 3 20 12 6 21 6 3"/>
-          </g>
-        ),
-        "square": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect width="18" height="18" x="3" y="3" rx="2"/>
-          </g>
-        ),
-        "info": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 16v-4M12 8h.01"/>
-          </g>
-        ),
-        "arrow-right-circle": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 12h8M12 8l4 4-4 4"/>
-          </g>
-        ),
-        "volume-2": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
-          </g>
-        ),
-        "triangle-alert": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </g>
-        ),
-        "help-circle": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </g>
-        ),
-        "check-circle": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </g>
-        ),
-        "x-circle": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-          </g>
-        ),
-        "chevron-left": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </g>
-        ),
-        "chevron-right": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </g>
-        ),
-        "lock": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </g>
-        ),
-        "log-out": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </g>
-        ),
-        "eye": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </g>
-        ),
-        "eye-off": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M2 2l20 20"/>
-          </g>
-        ),
-        "shuffle": (
-          <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
-          </g>
-        )
-      };
-
-      return (
-        <svg
-          className={className}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          {paths[name] || null}
-        </svg>
-      );
-    }
-
-    function App() {
-      // Default Dark Mode
-      const [darkMode, setDarkMode] = useState(() => {
-        const saved = localStorage.getItem('theme');
-        return saved ? saved === 'dark' : true;
-      });
-
-      // User State
-      const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('ssw_active_user');
-        return savedUser ? JSON.parse(savedUser) : null;
-      });
-
-      // Mastered Vocabulary Tracker
-      const [masteredVocab, setMasteredVocab] = useState(() => {
-        const saved = localStorage.getItem('ssw_mastered_vocab');
-        return saved ? JSON.parse(saved) : {};
-      });
-
-      // State Form Login
-      const [emailInput, setEmailInput] = useState("");
-      const [passwordInput, setPasswordInput] = useState("");
-      const [loginError, setLoginError] = useState("");
-      const [isAuthenticating, setIsAuthenticating] = useState(false);
-
-      const [activeModule, setActiveModule] = useState(1);
+  <div class="max-w-5xl w-full mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-12">
+    
+    <!-- Top Header Banner & Logo CSS -->
+    <header class="text-center space-y-6 max-w-2xl mx-auto flex flex-col items-center">
       
-      // State data halaman dari FIRESTORE
-      const [pages, setPages] = useState([]);
-      const [isLoadingData, setIsLoadingData] = useState(true);
-
-      const [currentPageIdx, setCurrentPageIdx] = useState(0);
-      const activePage = pages[currentPageIdx] || null;
-
-      const [openedTranslations, setOpenedTranslations] = useState({});
-      const [isPlayingFullPage, setIsPlayingFullPage] = useState(false);
-      const [quizAnswers, setQuizAnswers] = useState({});
-      const [showResetModal, setShowResetModal] = useState(false);
-
-      // Flashcard State
-      const [isFlashcardOpen, setIsFlashcardOpen] = useState(false);
-      const [flashcardsList, setFlashcardsList] = useState([]);
-      const [currentFlashcardIdx, setCurrentFlashcardIdx] = useState(0);
-      const [isFlipped, setIsFlipped] = useState(false);
-      const [hideFurigana, setHideFurigana] = useState(false);
-      const [isShuffled, setIsShuffled] = useState(false);
-
-      // Effect: Mengambil data dari Firestore saat aplikasi dibuka
-      useEffect(() => {
-        async function fetchPagesFromFirestore() {
-          try {
-            const { collection, getDocs, query, orderBy } = window.firestoreUtils;
-            const q = query(collection(window.db, "ssw_pages"), orderBy("pageNumber", "asc"));
-            const querySnapshot = await getDocs(q);
-            
-            const loadedPages = [];
-            querySnapshot.forEach((doc) => {
-              loadedPages.push(doc.data());
-            });
-
-            setPages(loadedPages);
-          } catch (error) {
-            console.error("Gagal mengambil data dari Firestore:", error);
-          } finally {
-            setIsLoadingData(false);
-          }
-        }
-
-        fetchPagesFromFirestore();
-      }, []);
-
-      useEffect(() => {
-        if (darkMode) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
-        }
-      }, [darkMode]);
-
-      useEffect(() => {
-        setOpenedTranslations({});
-        stopAudio();
-        setIsFlashcardOpen(false);
-      }, [currentPageIdx]);
-
-      useEffect(() => {
-        setCurrentPageIdx(0);
-        stopAudio();
-        setIsFlashcardOpen(false);
-      }, [activeModule]);
-
-      const progressPercent = useMemo(() => {
-        if (activeModule === 2) return 0;
-        if (pages.length === 0) return 0;
-        return Math.round(((currentPageIdx + 1) / pages.length) * 100);
-      }, [currentPageIdx, pages, activeModule]);
-
-      const toggleTranslation = (idx) => {
-        setOpenedTranslations(prev => ({
-          ...prev,
-          [idx]: !prev[idx]
-        }));
-      };
-
-      const handleQuizAnswer = (quizIdx, choice) => {
-        const quiz = activePage.quizzes[quizIdx];
-        const isCorrect = quiz.options ? quiz.options[choice].isCorrect : quiz.isCorrect === choice;
-
-        setQuizAnswers(prev => ({
-          ...prev,
-          [currentPageIdx]: {
-            ...(prev[currentPageIdx] || {}),
-            [quizIdx]: { chosen: choice, isCorrect }
-          }
-        }));
-      };
-
-      const cleanJapaneseText = (htmlString) => {
-        const temp = document.createElement("div");
-        temp.innerHTML = htmlString;
-        const rts = temp.getElementsByTagName("rt");
-        while (rts.length > 0) {
-          rts[0].parentNode.removeChild(rts[0]);
-        }
-        let text = temp.textContent || temp.innerText || "";
-        text = text.replace(/^[①②③➃⑤⑥⑦⑧⑨⑩A-Z]\.?\s*/i, "");
-        text = text.replace(/^\d+\.?\s*/, "");
-        text = text.replace(/^\([0-9]+\)\s*/, "");
-        return text;
-      };
-
-      const stopAudio = () => {
-        window.speechSynthesis.cancel();
-        setIsPlayingFullPage(false);
-      };
-
-      const playSentenceAudio = (jpText, idText, e) => {
-        if (e) e.stopPropagation();
-        stopAudio();
-
-        const jpClean = cleanJapaneseText(jpText);
-        const jpUtterance = new SpeechSynthesisUtterance(jpClean);
-        jpUtterance.lang = "ja-JP";
-        jpUtterance.rate = 0.85;
-
-        const voices = window.speechSynthesis.getVoices();
-        const jaVoice = voices.find(v => v.lang.startsWith("ja"));
-        if (jaVoice) jpUtterance.voice = jaVoice;
-
-        const idCleanDiv = document.createElement("div");
-        idCleanDiv.innerHTML = idText;
-        const idClean = idCleanDiv.textContent || idCleanDiv.innerText || "";
-
-        const idUtterance = new SpeechSynthesisUtterance(idClean);
-        idUtterance.lang = "id-ID";
-        idUtterance.rate = 0.95;
-
-        const idVoice = voices.find(v => v.lang.startsWith("id"));
-        if (idVoice) idUtterance.voice = idVoice;
-
-        window.speechSynthesis.speak(jpUtterance);
-        window.speechSynthesis.speak(idUtterance);
-      };
-
-      const playFullPageAudio = () => {
-        stopAudio();
-        setIsPlayingFullPage(true);
-
-        if (!activePage || !activePage.content || activePage.content.length === 0) return;
-        const contentArray = activePage.content;
-
-        let index = 0;
-
-        const playNext = () => {
-          if (index >= contentArray.length) {
-            setIsPlayingFullPage(false);
-            return;
-          }
-
-          const item = contentArray[index];
-          const jpClean = cleanJapaneseText(item.jp);
-          const jpUtterance = new SpeechSynthesisUtterance(jpClean);
-          jpUtterance.lang = "ja-JP";
-          jpUtterance.rate = 0.85;
-          const voices = window.speechSynthesis.getVoices();
-          const jaVoice = voices.find(v => v.lang.startsWith("ja"));
-          if (jaVoice) jpUtterance.voice = jaVoice;
-
-          const idCleanDiv = document.createElement("div");
-          idCleanDiv.innerHTML = item.id;
-          const idClean = idCleanDiv.textContent || idCleanDiv.innerText || "";
-
-          const idUtterance = new SpeechSynthesisUtterance(idClean);
-          idUtterance.lang = "id-ID";
-          idUtterance.rate = 0.95;
-          const idVoice = voices.find(v => v.lang.startsWith("id"));
-          if (idVoice) idUtterance.voice = idVoice;
-
-          idUtterance.onend = () => {
-            index++;
-            playNext();
-          };
-
-          jpUtterance.onerror = () => setIsPlayingFullPage(false);
-          idUtterance.onerror = () => setIsPlayingFullPage(false);
-
-          window.speechSynthesis.speak(jpUtterance);
-          window.speechSynthesis.speak(idUtterance);
-        };
-
-        playNext();
-      };
-
-      const executeReset = () => {
-        setQuizAnswers({});
-        setMasteredVocab({});
-        localStorage.removeItem('ssw_mastered_vocab');
-        setCurrentPageIdx(0);
-        setActiveModule(1);
-        stopAudio();
-        setShowResetModal(false);
-      };
-
-      const handleLoginSubmit = (e) => {
-        e.preventDefault();
-        setLoginError("");
-        setIsAuthenticating(true);
-
-        const foundUser = REGISTERED_USERS.find(
-          (u) => u.email.toLowerCase() === emailInput.trim().toLowerCase() && u.password === passwordInput
-        );
-
-        if (foundUser) {
-          setUser(foundUser);
-          localStorage.setItem('ssw_active_user', JSON.stringify(foundUser));
-          setEmailInput("");
-          setPasswordInput("");
-        } else {
-          setLoginError("Email atau Kata Sandi salah.");
-        }
-        setIsAuthenticating(false);
-      };
-
-      const handleLogout = () => {
-        stopAudio();
-        setUser(null);
-        localStorage.removeItem('ssw_active_user');
-      };
-
-      const handleFillCredentials = (email, password) => {
-        setEmailInput(email);
-        setPasswordInput(password);
-        setLoginError("");
-      };
-
-      const startFlashcards = () => {
-        if (!activePage || !activePage.vocab || activePage.vocab.length === 0) return;
-        setFlashcardsList([...activePage.vocab]);
-        setCurrentFlashcardIdx(0);
-        setIsFlipped(false);
-        setIsShuffled(false);
-        setIsFlashcardOpen(true);
-      };
-
-      const toggleShuffleFlashcards = () => {
-        if (isShuffled) {
-          setFlashcardsList([...activePage.vocab]);
-          setIsShuffled(false);
-        } else {
-          const shuffled = [...flashcardsList].sort(() => Math.random() - 0.5);
-          setFlashcardsList(shuffled);
-          setIsShuffled(true);
-        }
-        setCurrentFlashcardIdx(0);
-        setIsFlipped(false);
-      };
-
-      const toggleMasteredVocab = (kanji) => {
-        const updated = {
-          ...masteredVocab,
-          [kanji]: !masteredVocab[kanji]
-        };
-        setMasteredVocab(updated);
-        localStorage.setItem('ssw_mastered_vocab', JSON.stringify(updated));
-      };
-
-      const activeFlashcard = flashcardsList[currentFlashcardIdx];
-
-      // Indikator Loading Data Firestore
-      if (isLoadingData) {
-        return (
-          <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center space-y-4 font-fredoka">
-            <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm tracking-wide text-slate-300">Memuat Materi dari Cloud Firestore...</p>
-          </div>
-        );
-      }
-
-      return (
-        <div className="min-h-screen flex flex-col transition-colors duration-300 w-full overflow-x-hidden">
-          
-          {/* HEADER BAR */}
-          <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 transition-all w-full h-[64px]">
-            <div className="max-w-4xl mx-auto px-2 xs:px-4 h-full flex items-center justify-between">
-              
-              <div className="flex items-center space-x-1.5 xs:space-x-2.5 min-w-0">
-                <div className="w-8 h-8 xs:w-10 xs:h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 shrink-0">
-                  <Icon name="book-open" className="w-4.5 h-4.5 xs:w-6 xs:h-6" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="text-[10px] xs:text-xs sm:text-base md:text-lg font-bold font-fredoka tracking-wide text-brand-600 dark:text-brand-500 flex items-center gap-1">
-                    <span className="truncate">
-                      <span className="inline xs:hidden">SSW Ground Handling</span>
-                      <span className="hidden xs:inline">🇮🇩 SSW GROUND HANDLING 🇯🇵</span>
-                    </span>
-                  </h1>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-1 xs:space-x-2 shrink-0">
-                {user && activeModule === 1 && (
-                  <select
-                    value={currentPageIdx}
-                    onChange={(e) => setCurrentPageIdx(Number(e.target.value))}
-                    className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold font-fredoka px-1.5 py-1 xs:px-2.5 xs:py-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 text-[10px] sm:text-xs md:text-sm cursor-pointer w-[80px] xs:w-[110px] sm:w-[180px] md:w-[220px] truncate"
-                  >
-                    {pages.map((p, idx) => (
-                      <option key={idx} value={idx}>
-                        Hal {p.pageNumber}: {p.title}
-                      </option>
-                    ))}
-                  </select>
-                )}
-
-                <button 
-                  onClick={() => setDarkMode(!darkMode)}
-                  className="p-1.5 xs:p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-                  title="Ganti Tema"
-                >
-                  <Icon name={darkMode ? "sun" : "moon"} className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-                </button>
-
-                {user && (
-                  <React.Fragment>
-                    <button 
-                      onClick={() => setShowResetModal(true)}
-                      className="p-1.5 xs:p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-500 transition-colors"
-                      title="Reset Semua Progres"
-                    >
-                      <Icon name="rotate-ccw" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-                    </button>
-                    
-                    <button 
-                      onClick={handleLogout}
-                      className="p-1.5 xs:p-2 sm:p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 transition-colors flex items-center gap-1"
-                      title="Keluar / Logout"
-                    >
-                      <Icon name="log-out" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  </React.Fragment>
-                )}
-              </div>
-            </div>
-          </header>
-
-          {/* NAVIGATION BUTTONS */}
-          {user && activeModule === 1 && !isFlashcardOpen && (
-            <React.Fragment>
-              <button
-                onClick={() => setCurrentPageIdx(prev => Math.max(0, prev - 1))}
-                disabled={currentPageIdx === 0}
-                className="fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/90 dark:bg-slate-800/90 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 text-slate-600 dark:text-slate-300 hover:scale-110 active:scale-95 transition-all shadow-xl border border-slate-200 dark:border-slate-700 disabled:opacity-25 disabled:pointer-events-none flex items-center justify-center w-12 h-12"
-              >
-                <Icon name="chevron-left" className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={() => setCurrentPageIdx(prev => Math.min(pages.length - 1, prev + 1))}
-                disabled={currentPageIdx === pages.length - 1}
-                className="fixed right-2 md:right-6 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/90 dark:bg-slate-800/90 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 text-slate-600 dark:text-slate-300 hover:scale-110 active:scale-95 transition-all shadow-xl border border-slate-200 dark:border-slate-700 disabled:opacity-25 disabled:pointer-events-none flex items-center justify-center w-12 h-12"
-              >
-                <Icon name="chevron-right" className="w-6 h-6" />
-              </button>
-            </React.Fragment>
-          )}
-
-          {/* MAIN CONTENT */}
-          <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 flex flex-col space-y-4 sm:space-y-6">
-            
-            {!user ? (
-              /* LOGIN PAGE */
-              <div className="max-w-md w-full mx-auto py-10 px-4 sm:px-6 animate-fadeIn">
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
-                  
-                  <div className="text-center space-y-2">
-                    <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-                      <Icon name="lock" className="w-7 h-7" />
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight font-fredoka text-slate-900 dark:text-white pt-2">
-                      Selamat Datang Kembali
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                      Masuk dengan email terdaftar Anda untuk mulai belajar SSW Ground Handling
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleLoginSubmit} className="space-y-4">
-                    {loginError && (
-                      <div className="p-3 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900/60 flex items-start gap-2 animate-fadeIn">
-                        <Icon name="triangle-alert" className="w-4 h-4 shrink-0 mt-0.5" />
-                        <span>{loginError}</span>
-                      </div>
-                    )}
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                        Alamat Email
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-bold">@</span>
-                        <input
-                          type="email"
-                          required
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          placeholder="nama@ssw.com"
-                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium transition-all text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                        Kata Sandi
-                      </label>
-                      <input
-                        type="password"
-                        required
-                        value={passwordInput}
-                        onChange={(e) => setPasswordInput(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium transition-all text-sm"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isAuthenticating}
-                      className="w-full py-3 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold font-fredoka tracking-wide shadow-md shadow-brand-500/20 active:scale-98 transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      <span>{isAuthenticating ? "Memproses..." : "Masuk Akun"}</span>
-                      <Icon name="arrow-right-circle" className="w-4 h-4" />
-                    </button>
-                  </form>
-
-                  <div className="border-t border-slate-100 dark:border-slate-800 pt-5 space-y-3">
-                    <div className="flex items-center space-x-2 text-brand-600 dark:text-brand-400">
-                      <Icon name="info" className="w-4 h-4 shrink-0" />
-                      <span className="text-[11px] font-bold uppercase tracking-wider">Pilih Akun Terdaftar untuk Demo:</span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      {REGISTERED_USERS.map((acc, index) => (
-                        <div 
-                          key={index}
-                          onClick={() => handleFillCredentials(acc.email, acc.password)}
-                          className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-brand-50 dark:hover:bg-brand-950/20 rounded-xl border border-slate-200 dark:border-slate-850 cursor-pointer flex justify-between items-center text-xs group transition-all"
-                        >
-                          <div className="space-y-0.5">
-                            <p className="font-bold text-slate-850 dark:text-slate-200">{acc.name}</p>
-                            <p className="text-slate-500 dark:text-slate-400 text-[11px]">
-                              Email: <span className="font-semibold text-brand-600 dark:text-brand-400">{acc.email}</span>
-                            </p>
-                            <p className="text-slate-500 dark:text-slate-400 text-[11px]">
-                              Sandi: <span className="font-mono">{acc.password}</span>
-                            </p>
-                          </div>
-                          <span className="text-[10px] font-bold text-brand-500 group-hover:underline">Gunakan</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            ) : (
-              /* APP MAIN DASHBOARD */
-              <React.Fragment>
-                {/* MODUL SELECTOR TABS */}
-                <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/60 dark:bg-slate-900/60 rounded-2xl border border-slate-200/30 dark:border-slate-800/80">
-                  <button
-                    onClick={() => setActiveModule(1)}
-                    className={`py-2.5 sm:py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold font-fredoka transition-all duration-300 flex items-center justify-center space-x-2 ${
-                      activeModule === 1
-                        ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <span>📦 MODUL 1</span>
-                    <span className="text-[10px] opacity-80">(Halaman Firestore)</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveModule(2)}
-                    className={`py-2.5 sm:py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold font-fredoka transition-all duration-300 flex items-center justify-center space-x-2 ${
-                      activeModule === 2
-                        ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <span>🚀 MODUL 2</span>
-                    <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-[9px] px-1.5 py-0.5 rounded-md font-sans">SOON</span>
-                  </button>
-                </div>
-
-                {/* PROGRESS BAR */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeIn">
-                  <div className="flex-1 w-full">
-                    <div className="flex items-center justify-between text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
-                      <span>PROGRESS BELAJAR {activeModule === 1 ? "MODUL 1" : "MODUL 2"}</span>
-                      <span className="text-brand-600 dark:text-brand-400 font-fredoka text-xs sm:text-sm">{progressPercent}%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 sm:h-3 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-brand-500 to-emerald-400 h-full rounded-full transition-all duration-500 ease-out"
-                        style={{ width: `${progressPercent}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 sm:gap-6 md:border-l dark:border-slate-800 md:pl-6 shrink-0">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-500 flex items-center justify-center shrink-0">
-                        <Icon name="book-open" className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Halaman</div>
-                        <div className="text-xs sm:text-sm font-bold font-fredoka text-slate-700 dark:text-slate-300">
-                          {activeModule === 1 ? `${currentPageIdx + 1} / ${pages.length}` : "Status: Segera Hadir"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PAGE DISPLAY AREA */}
-                {activeModule === 1 && activePage ? (
-                  <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden min-h-[500px] animate-fadeIn w-full">
-                    
-                    <div className="bg-slate-50 dark:bg-slate-900/50 px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
-                      <div className="flex items-center space-x-2 min-w-0">
-                        <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse shrink-0"></span>
-                        <h2 className="font-bold text-slate-700 dark:text-slate-300 text-xs sm:text-sm md:text-base truncate max-w-full">
-                          {activePage.title}
-                        </h2>
-                      </div>
-                      
-                      <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0">
-                        {isPlayingFullPage ? (
-                          <button
-                            onClick={stopAudio}
-                            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 text-[10px] sm:text-xs font-bold border border-rose-200 dark:border-rose-900 hover:bg-rose-100 transition-colors animate-pulse"
-                          >
-                            <Icon name="square" className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                            <span>Hentikan</span>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={playFullPageAudio}
-                            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 text-[10px] sm:text-xs font-bold border border-brand-200 dark:border-brand-900 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
-                          >
-                            <Icon name="play" className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-500" />
-                            <span>Putar Suara Halaman</span>
-                          </button>
-                        )}
-                        
-                        <span className="text-[10px] sm:text-xs bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2 py-1 rounded-lg shrink-0">
-                          Hal {activePage.pageNumber}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 sm:p-6 flex-1 space-y-4 sm:space-y-6 leading-relaxed text-slate-800 dark:text-slate-100 w-full overflow-hidden">
-                      <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500 italic mb-2 sm:mb-4 flex items-start gap-1.5">
-                        <Icon name="info" className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-500" />
-                        <span>Klik pada kartu paragraf Jepang untuk melihat terjemahan bahasa Indonesia, atau dengarkan suara pelafalan kata.</span>
-                      </p>
-
-                      <div className="space-y-4 sm:space-y-6 ruby-container">
-                        {activePage.content.map((item, idx) => {
-                          const isOpen = openedTranslations[idx];
-                          
-                          if (item.type === "title") {
-                            return (
-                              <div key={idx} className="pb-3 border-b border-slate-100 dark:border-slate-800/80 animate-fadeIn">
-                                <div className="flex items-start gap-2.5">
-                                  <div className="w-1 h-7 sm:h-9 bg-brand-500 dark:bg-brand-400 rounded-full shrink-0 mt-1.5 animate-pulse"></div>
-                                  <div className="min-w-0 flex-1">
-                                    <div className="text-lg sm:text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[2em] sm:leading-[2.2em] break-words" 
-                                         dangerouslySetInnerHTML={{ __html: item.jp }} 
-                                    />
-                                    <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5 break-words" dangerouslySetInnerHTML={{ __html: item.id }} />
-                                  </div>
-                                  <button
-                                    onClick={(e) => playSentenceAudio(item.jp, item.id, e)}
-                                    className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-colors shadow-sm shrink-0 mt-1"
-                                  >
-                                    <Icon name="volume-2" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          }
-
-                          if (item.type === "subtitle") {
-                            return (
-                              <div key={idx} className="p-3 sm:p-4 rounded-xl bg-slate-100/50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/80 animate-fadeIn">
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="flex items-start space-x-2 min-w-0">
-                                    <Icon name="arrow-right-circle" className="w-4 h-4 sm:w-5 sm:h-5 text-brand-500 shrink-0 mt-1" />
-                                    <div className="min-w-0">
-                                      <div className="text-sm sm:text-lg font-bold tracking-wide text-slate-800 dark:text-slate-100 leading-[2em] sm:leading-[2.1em] break-words" 
-                                           dangerouslySetInnerHTML={{ __html: item.jp }} 
-                                      />
-                                      <div className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5 break-words" dangerouslySetInnerHTML={{ __html: item.id }} />
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={(e) => playSentenceAudio(item.jp, item.id, e)}
-                                    className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-colors shadow-sm shrink-0"
-                                  >
-                                    <Icon name="volume-2" className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div key={idx} className="group flex flex-col animate-fadeIn">
-                              <div 
-                                onClick={() => toggleTranslation(idx)}
-                                className={`p-3 sm:p-4 rounded-xl cursor-pointer border transition-all duration-200 flex flex-col gap-3 justify-between ${
-                                  isOpen 
-                                    ? 'bg-brand-100/40 dark:bg-slate-900 border-brand-400 dark:border-brand-500 shadow-md ring-1 ring-brand-400/30' 
-                                    : 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200/50 dark:border-slate-800 hover:bg-slate-100/80 dark:hover:bg-slate-800/60'
-                                }`}
-                              >
-                                <div className="flex items-start gap-3 justify-between w-full">
-                                  {item.jp.includes("<table") ? (
-                                    <div className="flex-1 w-full" dangerouslySetInnerHTML={{ __html: item.jp }} />
-                                  ) : (
-                                    <div className={`text-sm sm:text-base md:text-lg tracking-wide leading-[2em] sm:leading-[2.2em] flex-1 break-words transition-all duration-200 ${
-                                      isOpen 
-                                        ? 'text-slate-950 dark:text-white font-bold font-semibold' 
-                                        : 'text-slate-900 dark:text-slate-100 font-medium'
-                                    }`} 
-                                         dangerouslySetInnerHTML={{ __html: item.jp }} 
-                                    />
-                                  )}
-                                  
-                                  {!item.jp.includes("<table") && (
-                                    <button
-                                      onClick={(e) => playSentenceAudio(item.jp, item.id, e)}
-                                      className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-100 dark:hover:bg-brand-900 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-300 transition-colors shadow-sm shrink-0"
-                                    >
-                                      <Icon name="volume-2" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                    </button>
-                                  )}
-                                </div>
-
-                                {item.image && (
-                                  <div className="mt-2 border border-slate-200 dark:border-slate-750 rounded-xl overflow-hidden bg-white dark:bg-slate-900 p-2 max-w-full mx-auto w-full shadow-sm">
-                                    <img 
-                                      src={item.image} 
-                                      alt="Ilustrasi Pendukung" 
-                                      className="w-full h-auto object-contain rounded-lg max-h-60 sm:max-h-80 mx-auto"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-
-                              {isOpen && (
-                                <div className="px-4 py-3 mx-1 sm:mx-2 -mt-1 bg-white dark:bg-slate-800 border-x border-b border-brand-400 dark:border-brand-900 rounded-b-xl text-slate-750 dark:text-slate-100 text-[11px] sm:text-xs md:text-sm leading-relaxed shadow-md animate-fadeIn">
-                                  <div className="flex items-start space-x-2">
-                                    <span className="text-brand-500 dark:text-brand-400 mt-0.5 font-bold shrink-0">▼</span>
-                                    <div className="flex-1 font-semibold break-words" dangerouslySetInnerHTML={{ __html: item.id }} />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* GLOSARIUM KOSAKATA */}
-                      {activePage.vocab && activePage.vocab.length > 0 && (
-                        <div className="mt-8 p-4 bg-purple-50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900 rounded-2xl animate-fadeIn">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                            <h3 className="font-fredoka text-purple-700 dark:text-purple-400 text-sm sm:text-base font-bold flex items-center gap-2">
-                              <Icon name="book-open" className="w-4.5 h-4.5" />
-                              <span>Kotak Kosakata Penting (Glosarium)</span>
-                            </h3>
-                            <button
-                              onClick={startFlashcards}
-                              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-fredoka font-bold rounded-xl shadow-md text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95"
-                            >
-                              <span>Mulai Mode Flashcard 🎴</span>
-                            </button>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1">
-                            {activePage.vocab.map((v, vIdx) => {
-                              const isMastered = !!masteredVocab[v.kanji];
-                              return (
-                                <div key={vIdx} className={`bg-white dark:bg-slate-900 p-3 rounded-xl border flex items-center justify-between text-xs sm:text-sm shadow-sm transition-all duration-300 ${isMastered ? 'border-brand-500 bg-brand-50/20 dark:bg-brand-950/10' : 'border-purple-50 dark:border-purple-900/40'}`}>
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-2">
-                                      <ruby className="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base">
-                                        {v.kanji}<rt>{v.furigana}</rt>
-                                      </ruby>
-                                      {isMastered && (
-                                        <span className="text-[9px] bg-brand-500 text-white font-bold font-fredoka px-1.5 py-0.5 rounded-md">Mastered ⭐</span>
-                                      )}
-                                    </div>
-                                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 truncate font-medium">{v.arti}</p>
-                                  </div>
-                                  <div className="flex items-center gap-1.5 ml-2">
-                                    <button
-                                      onClick={() => toggleMasteredVocab(v.kanji)}
-                                      className={`p-1.5 rounded-lg transition-colors ${isMastered ? 'bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400' : 'bg-slate-100 dark:bg-slate-850 hover:bg-brand-50 text-slate-400 hover:text-brand-500'}`}
-                                      title={isMastered ? "Hapus dari Hafalan" : "Tandai Sudah Hafal"}
-                                    >
-                                      <span>★</span>
-                                    </button>
-                                    <button
-                                      onClick={() => playSentenceAudio(`<ruby>${v.kanji}<rt>${v.furigana}</rt></ruby>`, v.arti)}
-                                      className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-950 text-purple-600 dark:text-purple-400 transition-colors"
-                                      title="Putar Audio Kosakata"
-                                    >
-                                      <Icon name="volume-2" className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* KUIS INTERAKTIF */}
-                      {activePage.quizzes && (
-                        <div className="mt-8 sm:mt-12 p-3.5 sm:p-6 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-800 rounded-xl">
-                          <div className="flex items-center space-x-2 mb-4 sm:mb-6">
-                            <Icon name="help-circle" className="text-brand-500 w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-                            <h3 className="text-sm sm:text-lg font-bold">Kuis Pemahaman Mandiri (〇✕ クイズ)</h3>
-                          </div>
-
-                          <div className="space-y-4 sm:space-y-6">
-                            {activePage.quizzes.map((quiz, qIdx) => {
-                              const state = quizAnswers[currentPageIdx]?.[qIdx];
-                              const hasAnswered = !!state;
-
-                              const getButtonClass = (isCorrectBtn) => {
-                                if (!hasAnswered) {
-                                  if (isCorrectBtn) {
-                                    return "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/20 dark:hover:bg-emerald-900/40 border-2 border-emerald-500 dark:border-emerald-400 text-emerald-900 dark:text-emerald-200 font-bold shadow-sm transition-all";
-                                  } else {
-                                    return "bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/40 border-2 border-rose-500 dark:border-rose-400 text-rose-900 dark:text-rose-200 font-bold shadow-sm transition-all";
-                                  }
-                                }
-
-                                const userChoseThis = state.chosen === isCorrectBtn;
-                                const isCorrectAnswer = quiz.isCorrect === isCorrectBtn;
-
-                                if (userChoseThis) {
-                                  return state.isCorrect 
-                                    ? "bg-emerald-600 dark:bg-emerald-500 text-white border-2 border-emerald-700 shadow-md font-bold scale-[1.01] transition-all"
-                                    : "bg-rose-600 dark:bg-rose-500 text-white border-2 border-rose-700 shadow-md font-bold scale-[1.01] transition-all";
-                                } else {
-                                  return isCorrectAnswer 
-                                    ? "bg-emerald-100/40 dark:bg-emerald-950/10 text-emerald-800 dark:text-emerald-400 border-2 border-dashed border-emerald-500"
-                                    : "opacity-30 bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed";
-                                }
-                              };
-
-                              return (
-                                <div key={qIdx} className="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm space-y-3 sm:space-y-4 animate-fadeIn">
-                                  <div className="text-slate-400 dark:text-slate-550 text-[10px] font-bold uppercase tracking-wider flex items-center justify-between">
-                                    <span>Pertanyaan {qIdx + 1}</span>
-                                    {hasAnswered && (
-                                      <span className={`flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                        state.isCorrect ? "text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-950" : "text-rose-700 bg-rose-100 dark:text-rose-400 dark:bg-rose-950"
-                                      }`}>
-                                        <Icon name={state.isCorrect ? "check-circle" : "x-circle"} className="w-3.5 h-3.5" />
-                                        {state.isCorrect ? "Betul" : "Salah"}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="font-semibold text-sm sm:text-base text-slate-950 dark:text-slate-100 leading-relaxed text-center"
-                                       dangerouslySetInnerHTML={{ __html: quiz.question }}
-                                  />
-
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 pt-1">
-                                    <button
-                                      onClick={() => handleQuizAnswer(qIdx, true)}
-                                      disabled={hasAnswered}
-                                      className={`py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 ${getButtonClass(true)}`}
-                                    >
-                                      <span className="text-sm">〇</span>
-                                      <span>Betul (Tadashii)</span>
-                                    </button>
-
-                                    <button
-                                      onClick={() => handleQuizAnswer(qIdx, false)}
-                                      disabled={hasAnswered}
-                                      className={`py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 ${getButtonClass(false)}`}
-                                    >
-                                      <span className="text-sm">✕</span>
-                                      <span>Salah (Machigatte)</span>
-                                    </button>
-                                  </div>
-
-                                  {hasAnswered && (
-                                    <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg text-xs md:text-sm leading-relaxed text-slate-500 dark:text-slate-400 border border-dashed border-slate-200 dark:border-slate-700 animate-fadeIn break-words">
-                                      <span className="font-bold text-brand-600 dark:text-brand-400 block mb-0.5">Penjelasan:</span>
-                                      {quiz.explanation}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 text-center">
-                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500 font-fredoka">
-                        Halaman {currentPageIdx + 1} dari {pages.length}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  /* MODUL 2 SOON */
-                  <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center flex flex-col items-center justify-center min-h-[450px] animate-fadeIn">
-                    <div className="w-16 h-16 rounded-2xl bg-brand-50 dark:bg-brand-950/50 flex items-center justify-center text-brand-500 mb-6 animate-bounce">
-                      <Icon name="book-open" className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-bold font-fredoka text-slate-900 dark:text-white mb-2">
-                      MODUL 2: Operasional Apron & Marshalling Lanjutan
-                    </h3>
-                    <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 font-fredoka">
-                      Segera Hadir / Coming Soon
-                    </span>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md leading-relaxed mb-6">
-                      Modul 2 sedang dalam proses penyusunan konten interaktif.
-                    </p>
-                    <button
-                      onClick={() => setActiveModule(1)}
-                      className="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md transition-all text-xs sm:text-sm font-fredoka"
-                    >
-                      Kembali ke Modul 1
-                    </button>
-                  </div>
-                )}
-              </React.Fragment>
-            )}
-          </main>
-
-          {/* FLASHCARD MODAL */}
-          {user && isFlashcardOpen && activeFlashcard && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                
-                <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                    <h4 className="font-bold font-fredoka text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-                      Flashcard Kosakata - Hal {activePage.pageNumber}
-                    </h4>
-                  </div>
-                  <button
-                    onClick={() => setIsFlashcardOpen(false)}
-                    className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-500 transition-colors"
-                  >
-                    <Icon name="x-circle" className="w-4.5 h-4.5" />
-                  </button>
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col items-center justify-center space-y-6 overflow-y-auto">
-                  <div className="w-full flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 font-bold font-fredoka px-2">
-                    <span>{isShuffled ? "Urutan Diacak 🔀" : "Urutan Normal 📋"}</span>
-                    <span>KARTU {currentFlashcardIdx + 1} / {flashcardsList.length}</span>
-                  </div>
-
-                  <div 
-                    className="w-full h-64 perspective-1000 cursor-pointer"
-                    onClick={() => setIsFlipped(!isFlipped)}
-                  >
-                    <div className={`relative w-full h-full duration-500 transform-style-3d transition-transform ${isFlipped ? 'rotate-y-180' : ''}`}>
-                      <div className="absolute inset-0 w-full h-full backface-hidden bg-slate-50 dark:bg-slate-950 rounded-2xl border-2 border-purple-300 dark:border-purple-900 shadow-lg flex flex-col items-center justify-between p-6">
-                        <div className="w-full flex justify-between items-center text-xs text-slate-400">
-                          <span className="font-semibold uppercase tracking-widest text-[9px] bg-slate-200/50 dark:bg-slate-800 px-2 py-0.5 rounded-md">DEPAN (KANJI)</span>
-                          {masteredVocab[activeFlashcard.kanji] && (
-                            <span className="text-brand-600 dark:text-brand-400 font-fredoka text-[10px] flex items-center gap-1">⭐ Mastered</span>
-                          )}
-                        </div>
-                        
-                        <div className="text-center my-auto">
-                          {hideFurigana ? (
-                            <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-wide">
-                              {activeFlashcard.kanji}
-                            </div>
-                          ) : (
-                            <ruby className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-wide">
-                              {activeFlashcard.kanji}<rt className="text-sm sm:text-base md:text-lg mb-1">{activeFlashcard.furigana}</rt>
-                            </ruby>
-                          )}
-                        </div>
-
-                        <div className="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-1">
-                          <Icon name="info" className="w-3.5 h-3.5" />
-                          <span>Ketuk untuk membalik kartu</span>
-                        </div>
-                      </div>
-
-                      <div className="absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br from-purple-500/10 to-indigo-500/10 dark:from-purple-950/30 dark:to-indigo-950/30 rounded-2xl border-2 border-purple-500 dark:border-purple-600 shadow-lg flex flex-col items-center justify-between p-6 rotate-y-180">
-                        <div className="w-full flex justify-between items-center text-xs">
-                          <span className="font-semibold uppercase tracking-widest text-[9px] bg-purple-200/50 dark:bg-purple-900/50 text-purple-700 dark:text-purple-400 px-2 py-0.5 rounded-md">BELAKANG (ARTI)</span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              playSentenceAudio(`<ruby>${activeFlashcard.kanji}<rt>${activeFlashcard.furigana}</rt></ruby>`, activeFlashcard.arti);
-                            }}
-                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 transition-colors shadow"
-                            title="Putar Audio"
-                          >
-                            <Icon name="volume-2" className="w-4 h-4" />
-                          </button>
-                        </div>
-
-                        <div className="text-center my-auto px-4">
-                          <div className="text-2xl sm:text-3xl font-extrabold text-purple-900 dark:text-purple-300 tracking-wide leading-snug">
-                            {activeFlashcard.arti}
-                          </div>
-                          <div className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-2 font-mono">
-                            {activeFlashcard.kanji} 【{activeFlashcard.furigana}】
-                          </div>
-                        </div>
-
-                        <div className="text-xs text-purple-500 dark:text-purple-400 italic flex items-center gap-1">
-                          <Icon name="info" className="w-3.5 h-3.5" />
-                          <span>Ketuk untuk kembali ke depan</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 w-full pt-2">
-                    <button
-                      onClick={toggleShuffleFlashcards}
-                      className={`py-2 px-3 rounded-xl border font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-colors ${
-                        isShuffled 
-                          ? 'bg-purple-100 dark:bg-purple-950 border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-400' 
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Icon name="shuffle" className="w-4 h-4" />
-                      <span>{isShuffled ? "Urut" : "Acak"}</span>
-                    </button>
-
-                    <button
-                      onClick={() => setHideFurigana(!hideFurigana)}
-                      className={`py-2 px-3 rounded-xl border font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-colors ${
-                        hideFurigana 
-                          ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-900 text-amber-700 dark:text-amber-400' 
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Icon name={hideFurigana ? "eye-off" : "eye"} className="w-4 h-4" />
-                      <span>{hideFurigana ? "Furigana" : "Sembunyi"}</span>
-                    </button>
-
-                    <button
-                      onClick={() => toggleMasteredVocab(activeFlashcard.kanji)}
-                      className={`py-2 px-3 rounded-xl border font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-colors ${
-                        masteredVocab[activeFlashcard.kanji]
-                          ? 'bg-brand-100 dark:bg-brand-950 border-brand-300 dark:border-brand-800 text-brand-700 dark:text-brand-400'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      <span>★</span>
-                      <span>{masteredVocab[activeFlashcard.kanji] ? "Hafal" : "Kuasai"}</span>
-                    </button>
-                  </div>
-
-                </div>
-
-                <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-                  <button
-                    onClick={() => {
-                      setCurrentFlashcardIdx(prev => Math.max(0, prev - 1));
-                      setIsFlipped(false);
-                    }}
-                    disabled={currentFlashcardIdx === 0}
-                    className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 text-slate-700 dark:text-slate-300 rounded-xl font-fredoka font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center gap-1"
-                  >
-                    <Icon name="chevron-left" className="w-4 h-4" />
-                    <span>Sebelumnya</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (currentFlashcardIdx === flashcardsList.length - 1) {
-                        setIsFlashcardOpen(false);
-                      } else {
-                        setCurrentFlashcardIdx(prev => prev + 1);
-                        setIsFlipped(false);
-                      }
-                    }}
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-fredoka font-bold text-xs shadow-md transition-all flex items-center gap-1"
-                  >
-                    <span>{currentFlashcardIdx === flashcardsList.length - 1 ? "Selesai ✨" : "Berikutnya"}</span>
-                    <Icon name="chevron-right" className="w-4 h-4" />
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          )}
-
-          {/* RESET DIALOG */}
-          {showResetModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 w-full max-w-sm shadow-2xl flex flex-col space-y-4">
-                <div className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-500 flex items-center justify-center mx-auto mb-3">
-                    <Icon name="rotate-ccw" className="w-6 h-6 text-rose-600 dark:text-rose-400" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-bold font-fredoka text-slate-950 dark:text-white">Atur Ulang Progres?</h4>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                    Tindakan ini akan menghapus seluruh status pengerjaan kuis Anda, daftar hafalan glosarium, dan kembali ke Halaman 1.
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <button
-                    onClick={() => setShowResetModal(false)}
-                    className="py-2.5 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs sm:text-sm transition-colors font-fredoka"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    onClick={executeReset}
-                    className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs sm:text-sm transition-colors font-fredoka shadow-md shadow-rose-600/20"
-                  >
-                    Atur Ulang
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FOOTER */}
-          <footer className="bg-white dark:bg-slate-900 border-t border-slate-150 dark:border-slate-800 py-6 text-center text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-auto w-full">
-            <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p>&copy; 2026 Aplikasi Belajar Mandiri Ujian Evaluasi Kompetensi SSW Ground Handling.</p>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-brand-500 transition-colors">Syarat & Ketentuan</a>
-                <a href="#" className="hover:text-brand-500 transition-colors">Kontak</a>
-              </div>
-            </div>
-          </footer>
-
+      <!-- LOGO MURNI CSS / SVG VECTOR INLINE -->
+      <a href="/" class="inline-flex items-center gap-3 group transition-transform hover:scale-105">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-900/40 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:border-brand-400 group-hover:shadow-[0_0_20px_rgba(14,165,233,0.3)] transition-all shrink-0">
+          <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+            <path d="M12 2L2 7h3v13h2V12h10v8h2V7h3L12 2zm-1 8H8V7h3v3zm5 0h-3V7h3v3z"/>
+            <path d="M2.5 19h19v2h-19z" class="opacity-50"/>
+          </svg>
         </div>
-      );
-    }
+        <div class="flex flex-col text-left">
+          <div class="flex items-center gap-2">
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-white font-serif">日本語の旅</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-widest">TABI</span>
+          </div>
+          <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">Nihongo no Tabi</span>
+        </div>
+      </a>
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+      <!-- Subtitle Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold tracking-wide uppercase shadow-sm">
+        <i class="fa-solid fa-graduation-cap text-sm"></i> Portal Belajar Interaktif
+      </div>
+    </header>
+
+    <!-- Apps Showcase Grid -->
+    <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Card 1: JLPT N3 (In Development - Clickable) -->
+      <div class="card-hover glass-panel p-6 rounded-3xl border border-slate-800/80 flex flex-col justify-between space-y-6 relative overflow-hidden group">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-all"></div>
+        
+        <div class="space-y-4 relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-center text-2xl shadow-inner">
+              ⛩️
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                JLPT N3
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                In Development
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">JLPT N3 App</h2>
+            <p class="text-xs text-slate-400 leading-relaxed mt-2">
+              Modul latihan interaktif mencakup Bunpou (Tata Bahasa), Kanji N3, Dokkai (Pemahaman Bacaan), serta bank soal persiapan ujian JLPT N3.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Kanji</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Bunpou</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Dokkai</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800/80">
+          <a href="https://n3japaneselearning.netlify.app/" target="_blank" rel="noopener noreferrer" 
+            class="w-full py-2.5 px-4 bg-slate-800 hover:bg-amber-600/80 text-amber-300 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border border-amber-500/30 group-hover:shadow-amber-600/20">
+            <span>Buka Aplikasi N3 (In Dev)</span>
+            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Kaiwa (Active - Clickable) -->
+      <div class="card-hover glass-panel p-6 rounded-3xl border border-slate-800/80 flex flex-col justify-between space-y-6 relative overflow-hidden group">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+        
+        <div class="space-y-4 relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-center text-2xl shadow-inner">
+              💬
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Kaiwa
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                Active
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">Kaiwa Japanese App</h2>
+            <p class="text-xs text-slate-400 leading-relaxed mt-2">
+              Aplikasi praktis latihan percakapan bahasa Jepang harian & lingkungan kerja, pola kalimat Keigo, serta audio listening interaktif.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Percakapan</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Listening</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Keigo</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800/80">
+          <a href="courses/kaiwa/kaiwa.html" target="_blank" rel="noopener noreferrer" 
+            class="w-full py-2.5 px-4 bg-slate-800 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 group-hover:shadow-emerald-600/20">
+            <span>Buka Aplikasi Kaiwa</span>
+            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: SSW Ground Handling (In Development - Clickable) -->
+      <div class="card-hover glass-panel p-6 rounded-3xl border border-slate-800/80 flex flex-col justify-between space-y-6 relative overflow-hidden group">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-all"></div>
+        
+        <div class="space-y-4 relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-center text-2xl shadow-inner">
+              ✈️
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                Ground Handling
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                In Development
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">SSW Ground Handling App</h2>
+            <p class="text-xs text-slate-400 leading-relaxed mt-2">
+              Panduan operasional penerbangan bandara, istilah peralatan GSE, keselamatan kerja di Ramp, & materi ujian Tokutei Ginou SSW.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#GSE</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#Ramp</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">#SSW</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800/80">
+          <a href="courses/ground-handling/ssw-gh.html" target="_blank" rel="noopener noreferrer" 
+            class="w-full py-2.5 px-4 bg-slate-800 hover:bg-amber-600/80 text-amber-300 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border border-amber-500/30 group-hover:shadow-amber-600/20">
+            <span>Buka Aplikasi SSW (In Dev)</span>
+            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+          </a>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Middle Developer Profile Section -->
+    <section class="pt-8">
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/90 max-w-sm mx-auto text-center space-y-4 relative overflow-hidden shadow-2xl">
+        <!-- Subtle background glow -->
+        <div class="absolute inset-0 bg-gradient-to-b from-rose-500/5 via-transparent to-brand-500/5 pointer-events-none"></div>
+
+        <!-- Zani Avatar -->
+        <div class="relative inline-block">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-rose-500/40 bg-slate-900 avatar-glow mx-auto transition-transform hover:scale-105">
+            <img 
+              src="https://gladiatorboost.com/wp-content/uploads/2025/04/Wuthering-Waves-Zani-Ascension-Guide.jpg" 
+              alt="SilverKid Avatar - Zani Wuthering Waves" 
+              class="w-full h-full object-cover object-top"
+              onerror="this.onerror=null; this.src='https://placehold.co/200x200/1e293b/f43f5e?text=Zani';"
+            />
+          </div>
+        </div>
+
+        <!-- Developer Info -->
+        <div class="space-y-2 relative z-10">
+          <h3 class="text-xl font-bold text-white tracking-tight">@Pointedpensil</h3>
+          <p class="text-xs text-slate-400 leading-relaxed px-2">
+            Selamat datang. Tempat ini mengumpulkan berbagai web app dikembangkan untuk membantu proses belajar dan latihan interaktif.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-6 text-center text-xs text-slate-600 border-t border-slate-900/80 mt-8">
+    <p>© 2026 Sho • Learning Web Apps Showcase</p>
+  </footer>
+
 </body>
 </html>
