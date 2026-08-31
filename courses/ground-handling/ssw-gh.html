@@ -90,19 +90,46 @@
       font-weight: 700; 
     }
 
-    /* Styling Penanganan Gambar Agar Bisa Di-slide Horizontal */
+    /* =========================================================
+       STYLING GAMBAR: RESPONSIVE UNTUK PC & MOBILE
+       ========================================================= */
     .image-slide-container {
       width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
       border-radius: 1rem;
     }
-    .image-slide-container img {
-      max-width: none;
+
+    /* TAMPILAN DEFAULT PC/DESKTOP */
+    .image-slide-wrapper {
+      display: flex;
+      flex-wrap: wrap;          /* Mengatur gambar agar turun ke bawah jika melebihi lebar layar */
+      justify-content: center;  /* Posisi gambar di tengah */
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .image-slide-wrapper img {
+      max-width: 100%;         /* Pas di layar PC */
       height: auto;
-      display: block;
-      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 0.75rem;
+    }
+
+    /* TAMPILAN MOBILE (Layar <= 768px) */
+    @media (max-width: 768px) {
+      .image-slide-container {
+        overflow-x: auto;       /* Izinkan scroll horizontal jika gambar off-screen */
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      .image-slide-wrapper {
+        flex-wrap: nowrap;      /* Mencegah gambar turun ke bawah di mobile */
+        justify-content: flex-start;
+        width: max-content;     /* Lebar mengikuti total isi gambar agar bisa digeser */
+      }
+      .image-slide-wrapper img {
+        max-width: 85vw;        /* Gambar mengambil 85% lebar layar mobile */
+      }
     }
 
     .custom-scrollbar::-webkit-scrollbar {
@@ -475,13 +502,14 @@
       const renderItemContent = (contentHtml) => {
         if (!contentHtml) return null;
         
-        // Deteksi Gambar
+        // Deteksi Elemen Gambar
         if (contentHtml.includes('<img')) {
-          return e('div', { className: 'image-slide-container custom-scrollbar my-2 p-1 bg-slate-950/60 border border-slate-800' },
-            e('div', { className: 'min-w-max text-center' },
-              e('div', { dangerouslySetInnerHTML: { __html: contentHtml } }),
-              e('p', { className: 'text-[10px] text-brand-400 mt-1 italic' }, '↔ Geser horizontal jika gambar terpotong')
-            )
+          return e('div', { className: 'image-slide-container custom-scrollbar my-2 p-2 bg-slate-950/60 border border-slate-800' },
+            e('div', { 
+              className: 'image-slide-wrapper',
+              dangerouslySetInnerHTML: { __html: contentHtml } 
+            }),
+            e('p', { className: 'text-[10px] text-brand-400 mt-2 italic text-center sm:hidden' }, '↔ Geser horizontal jika gambar terpotong')
           );
         }
 
@@ -584,7 +612,7 @@
             ) : null
           ) : null,
 
-          /* MODAL FOKUS MEMBACA TANPA SUARA (DENGAN KONTROL NAVIGASI KANTIN / NAVIGASI HALAMAN DUA LEVEL) */
+          /* MODAL FOKUS MEMBACA TANPA SUARA */
           isFocusReadNoAudio && activePage && activePage.content ? e('div', { className: 'fixed inset-0 top-0 left-0 w-screen h-screen z-[999999] bg-[#080c14] flex flex-col justify-between p-4 sm:p-6 overflow-hidden' },
             
             /* Header Modal Fokus */

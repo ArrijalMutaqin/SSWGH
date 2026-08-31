@@ -1,0 +1,115 @@
+[debug] [2026-08-14T12:11:16.210Z] ----------------------------------------------------------------------
+[debug] [2026-08-14T12:11:16.216Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\advance\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2026-08-14T12:11:16.216Z] CLI Version:   15.26.0
+[debug] [2026-08-14T12:11:16.216Z] Platform:      win32
+[debug] [2026-08-14T12:11:16.216Z] Node Version:  v24.16.0
+[debug] [2026-08-14T12:11:16.216Z] Detected Agent: unknown
+[debug] [2026-08-14T12:11:16.216Z] Time:          Fri Aug 14 2026 19:11:16 GMT+0700 (Western Indonesia Time)
+[debug] [2026-08-14T12:11:16.216Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-14T12:11:16.232Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-08-14T12:11:17.715Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-14T12:11:17.715Z] > authorizing via signed-in user (arrijalm12@gmail.com)
+[debug] [2026-08-14T12:11:17.715Z] [iam] checking project sswghtabi for permissions ["firebase.projects.get"]
+[debug] [2026-08-14T12:11:17.716Z] Checked if tokens are valid: false, expires at: 1786175970542
+[debug] [2026-08-14T12:11:17.716Z] Checked if tokens are valid: false, expires at: 1786175970542
+[debug] [2026-08-14T12:11:17.716Z] > refreshing access token with scopes: []
+[debug] [2026-08-14T12:11:17.718Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-08-14T12:11:17.718Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-14T12:11:17.903Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-08-14T12:11:17.903Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-14T12:11:17.910Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions [none]
+[debug] [2026-08-14T12:11:17.910Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions  x-goog-user-project=sswghtabi
+[debug] [2026-08-14T12:11:17.910Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-08-14T12:11:18.302Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-08-14T12:11:18.302Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-08-14T12:11:18.961Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions 200
+[debug] [2026-08-14T12:11:18.961Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-08-14T12:11:18.962Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:18.962Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:18.962Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi [none]
+[debug] [2026-08-14T12:11:19.747Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi 200
+[debug] [2026-08-14T12:11:19.747Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi {"projectNumber":"508947337100","projectId":"sswghtabi","lifecycleState":"ACTIVE","name":"NihongoNoTabi","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-08-06T12:46:05.747Z"}
+[info] 
+[info] === Serving from 'D:\Program Development\Program SSW Ground Handling'...
+[info] 
+[debug] [2026-08-14T12:11:19.750Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:19.750Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:19.750Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites 
+[debug] [2026-08-14T12:11:21.233Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites 200
+[debug] [2026-08-14T12:11:21.233Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites {"sites":[{"name":"projects/sswghtabi/sites/sswghtabi","defaultUrl":"https://sswghtabi.web.app","appId":"1:508947337100:web:94ed0da40fdf25f37950a9","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-14T12:11:21.233Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:21.233Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:21.233Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config [none]
+[debug] [2026-08-14T12:11:24.313Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config 200
+[debug] [2026-08-14T12:11:24.313Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config {"projectId":"sswghtabi","appId":"1:508947337100:web:94ed0da40fdf25f37950a9","storageBucket":"sswghtabi.firebasestorage.app","apiKey":"AIzaSyDuBo-WsCX3pgfDEgukOQn2u_5W9XhwjMc","authDomain":"sswghtabi.firebaseapp.com","messagingSenderId":"508947337100","measurementId":"G-76MVDTGRHF","projectNumber":"508947337100","version":"2"}
+[debug] [2026-08-14T12:11:24.318Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:24.318Z] Checked if tokens are valid: true, expires at: 1786713076903
+[debug] [2026-08-14T12:11:24.318Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi [none]
+[debug] [2026-08-14T12:11:24.850Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi 200
+[debug] [2026-08-14T12:11:24.850Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi {"projectId":"sswghtabi","projectNumber":"508947337100","displayName":"NihongoNoTabi","name":"projects/sswghtabi","resources":{"hostingSite":"sswghtabi"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_399ca10c-40f0-4270-ab2b-e4acf9ef0627"}
+[info] +  hosting[sswghtabi]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[info] i  hosting: ::1 - - [14/Aug/2026:12:11:37 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:12:11:37 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:12:35:53 +0000] "GET /courses/kaiwa/kaiwa.html HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:12:35:53 +0000] \"GET /courses/kaiwa/kaiwa.html HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:12:41:19 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:12:41:19 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:12:41:24 +0000] "GET /courses/ground-handling/ssw-gh.html HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:12:41:24 +0000] \"GET /courses/ground-handling/ssw-gh.html HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:12:41:37 +0000] "GET / HTTP/1.1" 200 - "http://localhost:5000/courses/ground-handling/ssw-gh.html" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:12:41:37 +0000] \"GET / HTTP/1.1\" 200 - \"http://localhost:5000/courses/ground-handling/ssw-gh.html\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:02:59 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:02:59 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:04:03 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:04:03 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:04:56 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:04:56 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:04:59 +0000] "GET /courses/n5/n5.html HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:04:59 +0000] \"GET /courses/n5/n5.html HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:07:25 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:07:25 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [14/Aug/2026:13:07:26 +0000] "GET /courses/n5/n5.html HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [14/Aug/2026:13:07:26 +0000] \"GET /courses/n5/n5.html HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[debug] [2026-08-24T13:27:48.375Z] ----------------------------------------------------------------------
+[debug] [2026-08-24T13:27:48.382Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\advance\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2026-08-24T13:27:48.382Z] CLI Version:   15.26.0
+[debug] [2026-08-24T13:27:48.382Z] Platform:      win32
+[debug] [2026-08-24T13:27:48.382Z] Node Version:  v24.16.0
+[debug] [2026-08-24T13:27:48.383Z] Detected Agent: unknown
+[debug] [2026-08-24T13:27:48.383Z] Time:          Mon Aug 24 2026 20:27:48 GMT+0700 (Western Indonesia Time)
+[debug] [2026-08-24T13:27:48.383Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-24T13:27:48.402Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-08-24T13:27:50.091Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-24T13:27:50.091Z] > authorizing via signed-in user (arrijalm12@gmail.com)
+[debug] [2026-08-24T13:27:50.091Z] [iam] checking project sswghtabi for permissions ["firebase.projects.get"]
+[debug] [2026-08-24T13:27:50.091Z] Checked if tokens are valid: false, expires at: 1786713076903
+[debug] [2026-08-24T13:27:50.092Z] Checked if tokens are valid: false, expires at: 1786713076903
+[debug] [2026-08-24T13:27:50.092Z] > refreshing access token with scopes: []
+[debug] [2026-08-24T13:27:50.093Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-08-24T13:27:50.093Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-24T13:27:50.390Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-08-24T13:27:50.390Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-24T13:27:50.397Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions [none]
+[debug] [2026-08-24T13:27:50.397Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions  x-goog-user-project=sswghtabi
+[debug] [2026-08-24T13:27:50.397Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-08-24T13:27:50.685Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-08-24T13:27:50.686Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-08-24T13:27:52.303Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions 200
+[debug] [2026-08-24T13:27:52.303Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-08-24T13:27:52.304Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:52.304Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:52.304Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi [none]
+[debug] [2026-08-24T13:27:52.583Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi 200
+[debug] [2026-08-24T13:27:52.583Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/sswghtabi {"projectNumber":"508947337100","projectId":"sswghtabi","lifecycleState":"ACTIVE","name":"NihongoNoTabi","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-08-06T12:46:05.747Z"}
+[info] 
+[info] === Serving from 'D:\Program Development\Program SSW Ground Handling'...
+[info] 
+[debug] [2026-08-24T13:27:52.585Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:52.585Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:52.585Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites 
+[debug] [2026-08-24T13:27:54.238Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites 200
+[debug] [2026-08-24T13:27:54.239Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/sswghtabi/sites {"sites":[{"name":"projects/sswghtabi/sites/sswghtabi","defaultUrl":"https://sswghtabi.web.app","appId":"1:508947337100:web:94ed0da40fdf25f37950a9","type":"DEFAULT_SITE"}]}
+[debug] [2026-08-24T13:27:54.239Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:54.239Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:54.239Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config [none]
+[debug] [2026-08-24T13:27:55.644Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config 200
+[debug] [2026-08-24T13:27:55.644Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi/webApps/1:508947337100:web:94ed0da40fdf25f37950a9/config {"projectId":"sswghtabi","appId":"1:508947337100:web:94ed0da40fdf25f37950a9","storageBucket":"sswghtabi.firebasestorage.app","apiKey":"AIzaSyDuBo-WsCX3pgfDEgukOQn2u_5W9XhwjMc","authDomain":"sswghtabi.firebaseapp.com","messagingSenderId":"508947337100","measurementId":"G-76MVDTGRHF","projectNumber":"508947337100","version":"2"}
+[debug] [2026-08-24T13:27:55.648Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:55.648Z] Checked if tokens are valid: true, expires at: 1787581669391
+[debug] [2026-08-24T13:27:55.648Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi [none]
+[debug] [2026-08-24T13:27:56.024Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi 200
+[debug] [2026-08-24T13:27:56.024Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sswghtabi {"projectId":"sswghtabi","projectNumber":"508947337100","displayName":"NihongoNoTabi","name":"projects/sswghtabi","resources":{"hostingSite":"sswghtabi"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_399ca10c-40f0-4270-ab2b-e4acf9ef0627"}
+[info] +  hosting[sswghtabi]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[info] i  hosting: ::1 - - [24/Aug/2026:13:28:01 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [24/Aug/2026:13:28:01 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [24/Aug/2026:13:28:03 +0000] "GET /courses/kaiwa/kaiwa.html HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [24/Aug/2026:13:28:03 +0000] \"GET /courses/kaiwa/kaiwa.html HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.132.0 Chrome/148.0.7778.280 Electron/42.7.1 Safari/537.36\""}}
