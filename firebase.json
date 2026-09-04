@@ -12,10 +12,11 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "cleanUrls": true,
     "rewrites": [
       {
         "source": "/",
-        "destination": "dashboard/HalamanUtama.html"
+        "destination": "/index.html"
       }
     ]
   }
